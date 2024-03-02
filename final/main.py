@@ -1,7 +1,9 @@
 import sqlite3
 import customtkinter
+import hashlib
+
 from AdminWindow import adminWindow
-from UserWindow import userWindow
+from UserWindow import GUI
 
 class App(customtkinter.CTk):
     def __init__(self, *args, **kvargs):
@@ -23,16 +25,18 @@ class App(customtkinter.CTk):
         
         self.toplevel = None
 
-        self.login_entry = customtkinter.CTkEntry(self,placeholder_text="Heslo") # entry for login
+        self.login_entry = customtkinter.CTkEntry(self,placeholder_text="Heslo", show= "*") # entry for login
         self.login_entry.pack(side="top", pady = 20)
 
         self.login_button = customtkinter.CTkButton(self, text="Přihlášení", command= self.login) # button for login
         self.login_button.pack(side="top", pady = 10)
+        self.bind("<Return>", lambda event: self.login()) # it works on enter FUCK YES
 
     def login(self): # function for login
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
-        cur.execute("SELECT id FROM authorization WHERE password=?", (self.login_entry.get(),))
+        hashed_password = hashlib.sha256(self.login_entry.get().encode()).hexdigest()
+        cur.execute("SELECT id FROM authorization WHERE password=?", (hashed_password,))
         position = cur.fetchone()
 
         if position:
@@ -40,7 +44,7 @@ class App(customtkinter.CTk):
                 self.toplevel = adminWindow(self,self)
                 self.withdraw()
             elif position[0] == 2:
-                self.toplevel = userWindow(self,self)
+                self.toplevel = GUI(self,self)
                 self.withdraw()
         else:
             # Show error message

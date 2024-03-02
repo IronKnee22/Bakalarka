@@ -140,7 +140,8 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         self.main_button_1.grid(row=3, column=2, padx=(
             20, 20), pady=(20, 20), sticky="nsew")
         # tohle nevím proč nefunguje je to funkce na přidávání pomocí enteru
-        self.main_button_1.bind('<Return>', self.hw_value, add='+')
+        self.bind("<Return>", lambda event: self.hw_value())
+        self.bind("<KP_Enter>", lambda event: self.hw_value())
 
         self.main_button_2 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=(
             "gray10", "#DCE4EE"), command=self.change_pokracovat, text ="pokračovat")
@@ -161,12 +162,13 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         workbook.save(desktop_path / f"sval{Minuly_Sval}.xlsx")
         global x
         
-
-        if Minuly_Sval in b_objects:
-            for i in range(1, x):
-                b_objects[Minuly_Sval].go_backward(Speed, Steps)
-                x=x-1
-                time.sleep(3)
+        if 'b_objects' in globals() and b_objects is not None:
+            if Minuly_Sval in b_objects:
+                for i in range(1, x):
+                    b_objects[Minuly_Sval].go_backward(Speed, Steps)
+                    x=x-1
+                    time.sleep(3)
+        
 
 
         self.withdraw()
@@ -313,3 +315,12 @@ class databaseWindow(customtkinter.CTkToplevel):
 
         # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
+
+        self.mainwindow = mainwindow
+
+        self.back2Admin_button = customtkinter.CTkButton(self, text="Hl Admin", command= self.back2AdminWindow) # button for login
+        self.back2Admin_button.pack(side="top", pady = 10)
+
+    def back2AdminWindow(self):
+        self.withdraw()
+        self.mainwindow.deiconify()
