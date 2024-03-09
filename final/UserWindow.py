@@ -1,5 +1,7 @@
 import time
 import customtkinter
+import re
+from tkinter import messagebox
 
 from PneumoCVUTFBMI.DeviceLoader import DeviceLoader
 
@@ -101,6 +103,7 @@ class MainFrame(customtkinter.CTkFrame):
 
 
         self.entry1 = customtkinter.CTkEntry(self, placeholder_text="entry")
+        self.entry1.configure(validate='focusout', validatecommand=(self.register(self.validate_1), '%P'))
         self.entry1.grid(row=3, column=0, padx=20, pady=10)
 
         self.label_sval3 = customtkinter.CTkLabel(self, text="sval3")
@@ -112,6 +115,7 @@ class MainFrame(customtkinter.CTkFrame):
         self.progressbar3.set((b3.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry3 = customtkinter.CTkEntry(self, placeholder_text="entry3")
+        self.entry3.configure(validate='focusout', validatecommand=(self.register(self.validate_3), '%P'))
         self.entry3.grid(row=9, column=0, padx=20, pady=10)
 
         # ?druhý sloupec
@@ -127,6 +131,7 @@ class MainFrame(customtkinter.CTkFrame):
         self.progressbar5.set((b5.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry5 = customtkinter.CTkEntry(self, placeholder_text="entry5")
+        self.entry5.configure(validate='focusout', validatecommand=(self.register(self.validate_5), '%P'))
         self.entry5.grid(row=6, column=1, padx=20, pady=10)
 
         self.button = customtkinter.CTkButton(
@@ -143,6 +148,7 @@ class MainFrame(customtkinter.CTkFrame):
         self.progressbar2.set((b2.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry2 = customtkinter.CTkEntry(self, placeholder_text="entry2")
+        self.entry2.configure(validate='focusout', validatecommand=(self.register(self.validate_2), '%P'))
         self.entry2.grid(row=3, column=2, padx=20, pady=10)
 
         self.label_sval4 = customtkinter.CTkLabel(self, text="sval4")
@@ -154,98 +160,154 @@ class MainFrame(customtkinter.CTkFrame):
         self.progressbar4.set((b4.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry4 = customtkinter.CTkEntry(self, placeholder_text="entry4")
+        self.entry4.configure(validate='focusout', validatecommand=(self.register(self.validate_4), '%P'))
         self.entry4.grid(row=9, column=2, padx=20, pady=10)
+
+    def validate_1(self, value):
+        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        if re.fullmatch(pattern, value) is None:
+            messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
+            self.entry1.delete(0, customtkinter.END)            
+            return False
+        else:
+            return True
     
+    def validate_2(self, value):
+        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        if re.fullmatch(pattern, value) is None:
+            messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
+            self.entry2.delete(0, customtkinter.END)            
+            return False
+        else:
+            return True
     
+    def validate_3(self, value):
+        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        if re.fullmatch(pattern, value) is None:
+            messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
+            self.entry3.delete(0, customtkinter.END)            
+            return False
+        else:
+            return True
     
+    def validate_4(self, value):
+        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        if re.fullmatch(pattern, value) is None:
+            messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
+            self.entry4.delete(0, customtkinter.END)            
+            return False
+        else:
+            return True
+    
+    def validate_5(self, value):
+        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        if re.fullmatch(pattern, value) is None:
+            messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
+            self.entry5.delete(0, customtkinter.END)            
+            return False
+        else:
+            return True
+
     def button_event(self):
-        radio_value = radio_var.get()
-        entry_values = [self.entry1.get(), self.entry2.get(), self.entry3.get(), self.entry4.get(), self.entry5.get()]
-        entry_values = [0 if not value else value for value in entry_values]
-    
-        hodnoty_mm = {1: {'sklon': 3, 'posun': 2}, 2: {'sklon': 5, 'posun': 7}, 3: {'sklon': 1, 'posun': 4},
-                      4: {'sklon': 8, 'posun': 6}, 5: {'sklon': 2, 'posun': 9}}
-    
-        hodnoty_mv = {1: {'sklon': 2.38651, 'posun': 577.5167}, 2: {'sklon': 2.29055, 'posun': 572.351667}, 3: {'sklon': 1.83595, 'posun': 571.84},
-                      4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 1.61845, 'posun': 584.616667}}
-    
-        hodnoty_mbar = {1: {'sklon': 0.38744, 'posun': -2.5647}, 2: {'sklon': 0.36835, 'posun': -2.9516}, 3: {'sklon': 0.272308, 'posun': -3.793866},
-                        4: {'sklon': 0, 'posun': 1}, 5: {'sklon': 0.264, 'posun': 1.3979}}
-    
-        hodnoty_mV2mbar = {1: {'sklon': 0.162317, 'posun': -96.3022}, 2: {'sklon': 0.160467, 'posun': -94.54083}, 3: {'sklon': 0.15915, 'posun': -94.7982},
-                      4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 0.163467, 'posun': -94.1682}}
-    
-        if radio_value == 1:
-            rovnice = hodnoty_mm
-        elif radio_value == 2:
-            rovnice = hodnoty_mbar
-            prepocet = hodnoty_mV2mbar
-        elif radio_value == 3:
-            rovnice = hodnoty_mv
         
-    
-        results = []
+        sval1= self.entry1.get()
+        sval2= self.entry2.get()
+        sval3= self.entry3.get()
+        sval4= self.entry4.get()
+        sval5= self.entry5.get()
 
-        svaly = {
-            0: b1,
-            1: b2,
-            2: b3,
-            3: b4,
-            4: b5
-        }
+        if radio_var.get() == 0:
+            messagebox.showerror("Chybí sval", "Prosím vyber sval")
+        
+        if self.validate_1(sval1) and self.validate_2(sval2) and self.validate_3(sval3) and self.validate_4(sval4) and self.validate_5(sval5) and radio_var.get() !=0:
 
-        for index, entry in enumerate(entry_values, start=1):
-           
+            radio_value = radio_var.get()
+            entry_values = [self.entry1.get(), self.entry2.get(), self.entry3.get(), self.entry4.get(), self.entry5.get()]
+            entry_values = [0 if not value else value for value in entry_values]
 
-            if radio_value == 4: #pokud dělám jenom kroky tak nemusím nic počítat
-                result = int(entry)
+            hodnoty_mm = {1: {'sklon': 3, 'posun': 2}, 2: {'sklon': 5, 'posun': 7}, 3: {'sklon': 1, 'posun': 4},
+                          4: {'sklon': 8, 'posun': 6}, 5: {'sklon': 2, 'posun': 9}}
 
-            else:
-                
-                akt_hod_mV = svaly[index-1].readA0() #získání aktuální hodnoty v mV 
+            hodnoty_mv = {1: {'sklon': 2.38651, 'posun': 577.5167}, 2: {'sklon': 2.29055, 'posun': 572.351667}, 3: {'sklon': 1.83595, 'posun': 571.84},
+                          4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 1.61845, 'posun': 584.616667}}
 
-                if entry !=0:
+            hodnoty_mbar = {1: {'sklon': 0.38744, 'posun': -2.5647}, 2: {'sklon': 0.36835, 'posun': -2.9516}, 3: {'sklon': 0.272308, 'posun': -3.793866},
+                            4: {'sklon': 0, 'posun': 1}, 5: {'sklon': 0.264, 'posun': 1.3979}}
 
-                    if radio_value == 3:
-                        start_hodnta = akt_hod_mV 
-                    elif radio_value == 1: #! z mV Na mm
-                        start_hodnta = akt_hod_mV #převedení hodnoty na správné jednotky
-                    elif radio_value == 2: #! z mV na mbar
-                        sklon = prepocet[index]['sklon']
-                        posun = prepocet[index]['posun']
-                        start_hodnta =sklon * akt_hod_mV + posun #převedení hodnoty na správné jednotky
+            hodnoty_mV2mbar = {1: {'sklon': 0.162317, 'posun': -96.3022}, 2: {'sklon': 0.160467, 'posun': -94.54083}, 3: {'sklon': 0.15915, 'posun': -94.7982},
+                          4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 0.163467, 'posun': -94.1682}}
 
-                    konecna_hodnota = float(start_hodnta) + float(entry)  #získání hodnoty na kterou se chceme dostat pomocí startovní + posunu
-                    
-                    sklon = rovnice[index]['sklon']
-                    posun = rovnice[index]['posun']
+            if radio_value == 1:
+                rovnice = hodnoty_mm
+            elif radio_value == 2:
+                rovnice = hodnoty_mbar
+                prepocet = hodnoty_mV2mbar
+            elif radio_value == 3:
+                rovnice = hodnoty_mv
 
-                    kon_kroky = (konecna_hodnota - posun) / sklon #přepočet na kroky
-                    start_kroky = float((start_hodnta - posun) / sklon) #přepočet na kroky
 
-                    result = kon_kroky - start_kroky #spočítání nutných kroků
+            results = []
+
+            svaly = {
+                0: b1,
+                1: b2,
+                2: b3,
+                3: b4,
+                4: b5
+            }
+
+            for index, entry in enumerate(entry_values, start=1):
+            
+
+                if radio_value == 4: #pokud dělám jenom kroky tak nemusím nic počítat
+                    result = int(entry)
+
                 else:
-                    result = 0
-            aktualni_poz[index-1] += result
-            results.append(result)
-    
 
-        
+                    akt_hod_mV = svaly[index-1].readA0() #získání aktuální hodnoty v mV 
 
-        
-        progressbars = [self.progressbar1, self.progressbar2, self.progressbar3, self.progressbar4, self.progressbar5]
+                    if entry !=0:
 
-        for i in range(5):
-            if results[i] > 0:
-                svaly[i].go_forward(10, results[i])
-                #time.sleep(2)
-            elif results[i] < 0:
-                svaly[i].go_backward(10, -results[i])
-        time.sleep(3)
-        for i in range(5):
-            print(svaly[i].readA0())
-            b = (svaly[i].readA0() - minHodnotaSvalu) / (maxHodnotaSvalu - minHodnotaSvalu)
-            progressbars[i].set(b)
+                        if radio_value == 3:
+                            start_hodnta = akt_hod_mV 
+                        elif radio_value == 1: #! z mV Na mm
+                            start_hodnta = akt_hod_mV #převedení hodnoty na správné jednotky
+                        elif radio_value == 2: #! z mV na mbar
+                            sklon = prepocet[index]['sklon']
+                            posun = prepocet[index]['posun']
+                            start_hodnta =sklon * akt_hod_mV + posun #převedení hodnoty na správné jednotky
+
+                        konecna_hodnota = float(start_hodnta) + float(entry)  #získání hodnoty na kterou se chceme dostat pomocí startovní + posunu
+
+                        sklon = rovnice[index]['sklon']
+                        posun = rovnice[index]['posun']
+
+                        kon_kroky = (konecna_hodnota - posun) / sklon #přepočet na kroky
+                        start_kroky = float((start_hodnta - posun) / sklon) #přepočet na kroky
+
+                        result = kon_kroky - start_kroky #spočítání nutných kroků
+                    else:
+                        result = 0
+                aktualni_poz[index-1] += result
+                results.append(result)
+
+
+
+
+
+            progressbars = [self.progressbar1, self.progressbar2, self.progressbar3, self.progressbar4, self.progressbar5]
+
+            for i in range(5):
+                if results[i] > 0:
+                    svaly[i].go_forward(10, results[i])
+                    #time.sleep(2)
+                elif results[i] < 0:
+                    svaly[i].go_backward(10, -results[i])
+            time.sleep(3)
+            for i in range(5):
+                print(svaly[i].readA0())
+                b = (svaly[i].readA0() - minHodnotaSvalu) / (maxHodnotaSvalu - minHodnotaSvalu)
+                progressbars[i].set(b)
     
 
 
