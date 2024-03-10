@@ -1,23 +1,11 @@
-import customtkinter
 import time
-import openpyxl
-from pathlib import Path
+import customtkinter
 import re
+from tkinter import messagebox
 
 import sqlite3
 
-
-from tkinter import messagebox
-
 from PneumoCVUTFBMI.DeviceLoader import DeviceLoader
-
-workbook = openpyxl.Workbook()
-worksheet = workbook.active
-Minuly_Sval = 0
-Zvoleny_Sval = 0
-y = 0
-x = 1
-pokracovat = True
 
 dl = DeviceLoader()
 
@@ -27,298 +15,245 @@ b3 = dl.getBoard3()
 b4 = dl.getBoard4()
 b5 = dl.getBoard5()
 
-# Modes: "System" (standard), "Dark", "Light"
-customtkinter.set_appearance_mode("System")
-# Themes: "blue" (standard), "green", "dark-blue"
+b1.on()
+b2.on()
+b3.on()
+b4.on()
+b5.on()
+
+maxHodnotaSvalu = 700
+minHodnotaSvalu = 550
+
+customtkinter.set_appearance_mode("light")
 customtkinter.set_default_color_theme("blue")
 
-class adminWindow(customtkinter.CTkToplevel):
-    def __init__(self, mainwindow, *args, **kwargs):
-        super().__init__(*args, **kwargs)
+class LeftFrame(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
 
-        # self.technicka_nula() # tohle se bude řešit teprve až to bude
-        # Set window size
-        width = 300
-        height = 150
-        
-        # Automatic calculation position of window based on monitor size
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        screen_x = (screen_width - width) // 2
-        screen_y = (screen_height - height) // 2
-        self.title("admin")
+        self.label = customtkinter.CTkLabel(self, text="left frame")
+        self.label.grid(row=0, column=0, padx=10)
 
-        # Set size a place parametrs
-        self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
+        self.button1 = customtkinter.CTkButton(
+            self, text="Akce 1", command=self.button_event)
+        self.button1.grid(row=1, column=0, padx=10, pady=10)
 
-        self.measure_button = customtkinter.CTkButton(self, text="Měření", command= self.mesureWindow) # button for login
-        self.measure_button.pack(side="top", pady = 10)
+        self.button2 = customtkinter.CTkButton(
+            self, text="Akce 2", command=self.button_event)
+        self.button2.grid(row=2, column=0, padx=10, pady=10)
 
-        self.db_button = customtkinter.CTkButton(self, text="Databáze", command= self.databaseWindow) # button for login
-        self.db_button.pack(side="top", pady = 10)
+        self.button3 = customtkinter.CTkButton(
+            self, text="Akce 3", command=self.button_event)
+        self.button3.grid(row=3, column=0, padx=10, pady=10)
 
-        self.home_button = customtkinter.CTkButton(self, text="Hlavní stránka", command= self.back2Main) # button for login
-        self.home_button.pack(side="bottom", pady = 10)
+        self.button4 = customtkinter.CTkButton(
+            self, text="Akce 4", command=self.button_event)
+        self.button4.grid(row=4, column=0, padx=10, pady=10)
 
-        self.mainwindow = mainwindow
-    
-    def mesureWindow(self):
-        self.toplevel = mesuremenWindow(self,self)
-        self.withdraw()
+        self.label2 = customtkinter.CTkLabel(self, text=" ")
+        self.label2.grid(row=5, column=0, padx=10)
 
-    def databaseWindow(self):
-        self.toplevel = databaseWindow(self,self)
-        self.withdraw()
+        self.label1 = customtkinter.CTkLabel(self, text=" ")
+        self.label1.grid(row=6, column=0, padx=10)
 
-    def back2Main(self):
-        self.withdraw()
-        self.mainwindow.deiconify()
+        self.label = customtkinter.CTkLabel(self, text=" ")
+        self.label.grid(row=7, column=0, padx=10)
 
-class mesuremenWindow(customtkinter.CTkToplevel):
-    def __init__(self, mainwindow, *args, **kwargs):
-        super().__init__(*args, **kwargs)
-        # Set window size
-        width = 540
-        height = 220
-        
-        # Automatic calculation position of window based on monitor size
-        screen_width = self.winfo_screenwidth()
-        screen_height = self.winfo_screenheight()
-        screen_x = (screen_width - width) // 2
-        screen_y = (screen_height - height) // 2
-        self.title("mesure")
+        self.label_switch = customtkinter.CTkLabel(
+            self, text="Light/Dark Mode")
+        self.label_switch.grid(row=8, column=0, padx=10)
 
-        # Set size a place parametrs
-        self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
-
-        # create sidebar frame with widgets
-        self.sidebar_frame = customtkinter.CTkFrame(
-            self, width=140, corner_radius=0)
-        self.sidebar_frame.grid(row=0, column=0, rowspan=6, sticky="nsew")
-        self.sidebar_frame.grid_rowconfigure(4, weight=1)
-        self.logo_label = customtkinter.CTkLabel(
-            self.sidebar_frame, text="Výběr svalu", font=customtkinter.CTkFont(size=20, weight="bold"))
-        self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
-
-        # create radiobutton frame
-        self.radio_var = customtkinter.IntVar(value=0)
-
-        self.radio_button_1 = customtkinter.CTkRadioButton(
-            master=self.sidebar_frame, variable=self.radio_var, value=1, command=self.radiobutton_event, text="Sval 1")
-        self.radio_button_1.grid(row=1, column=0)
-        self.radio_button_2 = customtkinter.CTkRadioButton(
-            master=self.sidebar_frame, variable=self.radio_var, value=2, command=self.radiobutton_event, text="Sval 2")
-        self.radio_button_2.grid(row=2, column=0)
-        self.radio_button_3 = customtkinter.CTkRadioButton(
-            master=self.sidebar_frame, variable=self.radio_var, value=3, command=self.radiobutton_event, text="Sval 3")
-        self.radio_button_3.grid(row=3, column=0)
-        self.radio_button_4 = customtkinter.CTkRadioButton(
-            master=self.sidebar_frame, variable=self.radio_var, value=4, command=self.radiobutton_event, text="Sval 4")
-        self.radio_button_4.grid(row=4, column=0)
-        self.radio_button_5 = customtkinter.CTkRadioButton(
-            master=self.sidebar_frame, variable=self.radio_var, value=5, command=self.radiobutton_event, text="Sval 5")
-        self.radio_button_5.grid(row=5, column=0)
-
-        # Apearence mode options
-        self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
-                                                                       command=self.change_appearance_mode_event)
-        self.appearance_mode_optionemenu.grid(
-            row=6, column=0, padx=20, pady=(10, 10))
-        self.appearance_mode_optionemenu.set("System")
+        self.switch = customtkinter.CTkSwitch(self, text="Light Mode", command=self.switch_event,
+                                              onvalue="on", offvalue="off")
+        self.switch.grid(row=10, column=0, padx=10)
 
 
-        # create main entry and button
-        self.entrySpeed = customtkinter.CTkEntry(
-            self, placeholder_text="Speed")
-        self.entrySpeed.configure(validate='focusout', validatecommand=(self.register(self.validate_speed), '%P'))
-        self.entrySpeed.grid(row=2, column=1,  padx=(
-            20, 0), pady=(20, 20), sticky="nsew")
 
-        self.entrySteps = customtkinter.CTkEntry(
-            self, placeholder_text="Steps")
-        self.entrySteps.configure(validate='focusout', validatecommand=(self.register(self.validate_steps), '%P'))
-        self.entrySteps.grid(row=2, column=2, padx=(
-            20, 0), pady=(20, 20), sticky="nsew")
+    def switch_event(self):
+        if (self.switch.get() == "on"):
+            customtkinter.set_appearance_mode("dark")
+            self.switch.configure(text="Dark Mode")
+        else:
+            customtkinter.set_appearance_mode("light")
+            self.switch.configure(text="Light Mode")
 
-        self.entry = customtkinter.CTkEntry(self, placeholder_text="Hw Value")
-        self.entry.configure(validate='focusout', validatecommand=(self.register(self.validate_mbar), '%P'))
-        self.entry.grid(row=3, column=1, padx=(20, 0),
-                        pady=(20, 20), sticky="nsew")
-
-        self.main_button_1 = customtkinter.CTkButton(
-            self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.hw_value, text="krok")
-        self.main_button_1.grid(row=3, column=2, padx=(
-            20, 20), pady=(20, 20), sticky="nsew")
-        # tohle nevím proč nefunguje je to funkce na přidávání pomocí enteru
-        self.bind("<Return>", lambda event: self.hw_value())
-        self.bind("<KP_Enter>", lambda event: self.hw_value())
-
-        self.main_button_2 = customtkinter.CTkButton(master=self, fg_color="transparent", border_width=2, text_color=(
-            "gray10", "#DCE4EE"), command=self.change_pokracovat, text ="pokračovat")
-        self.main_button_2.grid(row=4, column=2, padx=(
-            20, 20), pady=(20, 20), sticky="nsew")
-        self.main_button_2.configure(state='disabled')
+    def button_event(self):
+        print("Akce")
 
 
-        self.main_button_3 = customtkinter.CTkButton(
-            self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.back2AdminWindow, text="Hl admin")
-        self.main_button_3.grid(row=4, column=1, padx=(
-            20, 20), pady=(20, 20), sticky="nsew")
-        
-        self.mainwindow = mainwindow
-        
-        
-    
+class MainFrame(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
 
-    def validate_speed(self, value):
+        global maxHodnotaSvalu
+        global minHodnotaSvalu
+        global sklon
+        global posun
+        global aktualni_poz
+        aktualni_poz = [0,0,0,0,0]
+
+        # ?první sloupec
+
+        self.label_sval1 = customtkinter.CTkLabel(self, text="sval1")
+        self.label_sval1.grid(row=1, column=0, padx=20)
+
+        self.progressbar1 = customtkinter.CTkProgressBar(
+            self, orientation="horizontal")
+        self.progressbar1.grid(row=2, column=0, padx=20)
+        self.progressbar1.set((b1.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
+
+
+
+        self.entry1 = customtkinter.CTkEntry(self, placeholder_text="entry")
+        self.entry1.configure(validate='focusout', validatecommand=(self.register(self.validate_1), '%P'))
+        self.entry1.grid(row=3, column=0, padx=20, pady=10)
+
+        self.label_sval3 = customtkinter.CTkLabel(self, text="sval3")
+        self.label_sval3.grid(row=7, column=0, padx=20)
+
+        self.progressbar3 = customtkinter.CTkProgressBar(
+            self, orientation="horizontal")
+        self.progressbar3.grid(row=8, column=0, padx=20)
+        self.progressbar3.set((b3.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
+
+        self.entry3 = customtkinter.CTkEntry(self, placeholder_text="entry3")
+        self.entry3.configure(validate='focusout', validatecommand=(self.register(self.validate_3), '%P'))
+        self.entry3.grid(row=9, column=0, padx=20, pady=10)
+
+        # ?druhý sloupec
+        self.label = customtkinter.CTkLabel(self, text="main frame")
+        self.label.grid(row=0, column=1, padx=20)
+
+        self.label_sval5 = customtkinter.CTkLabel(self, text="sval5")
+        self.label_sval5.grid(row=4, column=1, padx=20)
+
+        self.progressbar5 = customtkinter.CTkProgressBar(
+            self, orientation="horizontal")
+        self.progressbar5.grid(row=5, column=1, padx=20)
+        self.progressbar5.set((b5.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
+
+        self.entry5 = customtkinter.CTkEntry(self, placeholder_text="entry5")
+        self.entry5.configure(validate='focusout', validatecommand=(self.register(self.validate_5), '%P'))
+        self.entry5.grid(row=6, column=1, padx=20, pady=10)
+
+        self.button = customtkinter.CTkButton(
+            self, text="Spustit", command=self.button_event)
+        self.button.grid(row=10, column=1, padx=20, pady=10)
+
+        # ?třetí sloupec
+        self.label_sval2 = customtkinter.CTkLabel(self, text="sval2")
+        self.label_sval2.grid(row=1, column=2, padx=20)
+
+        self.progressbar2 = customtkinter.CTkProgressBar(
+            self, orientation="horizontal")
+        self.progressbar2.grid(row=2, column=2, padx=20)
+        self.progressbar2.set((b2.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
+
+        self.entry2 = customtkinter.CTkEntry(self, placeholder_text="entry2")
+        self.entry2.configure(validate='focusout', validatecommand=(self.register(self.validate_2), '%P'))
+        self.entry2.grid(row=3, column=2, padx=20, pady=10)
+
+        self.label_sval4 = customtkinter.CTkLabel(self, text="sval4")
+        self.label_sval4.grid(row=7, column=2, padx=20)
+
+        self.progressbar4 = customtkinter.CTkProgressBar(
+            self, orientation="horizontal")
+        self.progressbar4.grid(row=8, column=2, padx=20)
+        self.progressbar4.set((b4.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
+
+        self.entry4 = customtkinter.CTkEntry(self, placeholder_text="entry4")
+        self.entry4.configure(validate='focusout', validatecommand=(self.register(self.validate_4), '%P'))
+        self.entry4.grid(row=9, column=2, padx=20, pady=10)
+
+    def validate_1(self, value):
         pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
-            self.entrySpeed.delete(0, customtkinter.END)            
+            self.entry1.delete(0, customtkinter.END)            
             return False
         else:
             return True
     
-    def validate_steps(self, value):
+    def validate_2(self, value):
         pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
-            self.entrySteps.delete(0, customtkinter.END)            
+            self.entry2.delete(0, customtkinter.END)            
             return False
         else:
             return True
     
-    def validate_mbar(self, value):
+    def validate_3(self, value):
         pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
-            self.entry.delete(0, customtkinter.END)            
+            self.entry3.delete(0, customtkinter.END)            
+            return False
+        else:
+            return True
+    
+    def validate_4(self, value):
+        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        if re.fullmatch(pattern, value) is None:
+            messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
+            self.entry4.delete(0, customtkinter.END)            
+            return False
+        else:
+            return True
+    
+    def validate_5(self, value):
+        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        if re.fullmatch(pattern, value) is None:
+            messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
+            self.entry5.delete(0, customtkinter.END)            
             return False
         else:
             return True
 
-    def back2AdminWindow(self):
-        desktop_path = Path.home() / "Desktop"
-        workbook.save(desktop_path / f"sval{Minuly_Sval}.xlsx")
-        global x
+    def button_event(self):
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
         
-        if 'b_objects' in globals() and b_objects is not None:
-            if Minuly_Sval in b_objects:
-                for i in range(1, x):
-                    b_objects[Minuly_Sval].go_backward(Speed, Steps)
-                    x=x-1
-                    time.sleep(3)
-        
+        sval1= self.entry1.get()
+        sval2= self.entry2.get()
+        sval3= self.entry3.get()
+        sval4= self.entry4.get()
+        sval5= self.entry5.get()
 
-
-        self.withdraw()
-        self.mainwindow.deiconify()
-
-
-    def change_pokracovat(self):
-        global pokracovat
-        pokracovat = True
-        self.main_button_2.configure(state='disabled')
-
-    def hw_value(self):
-        speed_value = self.entrySpeed.get()
-        steps_value = self.entrySteps.get()
-        mbar_value = self.entry.get()
-
-        if Zvoleny_Sval == 0:
+        if radio_var.get() == 0:
             messagebox.showerror("Chybí sval", "Prosím vyber sval")
         
-        if self.validate_speed(speed_value) and self.validate_mbar(steps_value) and self.validate_mbar(mbar_value) and Zvoleny_Sval !=0:
+        if self.validate_1(sval1) and self.validate_2(sval2) and self.validate_3(sval3) and self.validate_4(sval4) and self.validate_5(sval5) and radio_var.get() !=0:
 
-            global x
-            global y
-            global Speed
-            global Steps
-            global Minuly_Sval
-            global pokracovat
+            radio_value = radio_var.get()
+            entry_values = [self.entry1.get(), self.entry2.get(), self.entry3.get(), self.entry4.get(), self.entry5.get()]
+            entry_values = [0 if not value else value for value in entry_values]
+
+            hodnoty_mm = {1: {'sklon': 3, 'posun': 2}, 2: {'sklon': 5, 'posun': 7}, 3: {'sklon': 1, 'posun': 4},
+                          4: {'sklon': 8, 'posun': 6}, 5: {'sklon': 2, 'posun': 9}}
+
+            hodnoty_mv = {1: {'sklon': 2.38651, 'posun': 577.5167}, 2: {'sklon': 2.29055, 'posun': 572.351667}, 3: {'sklon': 1.83595, 'posun': 571.84},
+                          4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 1.61845, 'posun': 584.616667}}
+
+            hodnoty_mbar = {1: {'sklon': 0.38744, 'posun': -2.5647}, 2: {'sklon': 0.36835, 'posun': -2.9516}, 3: {'sklon': 0.272308, 'posun': -3.793866},
+                            4: {'sklon': 0, 'posun': 1}, 5: {'sklon': 0.264, 'posun': 1.3979}}
+
+            hodnoty_mV2mbar = {1: {'sklon': 0.162317, 'posun': -96.3022}, 2: {'sklon': 0.160467, 'posun': -94.54083}, 3: {'sklon': 0.15915, 'posun': -94.7982},
+                          4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 0.163467, 'posun': -94.1682}}
+
+            if radio_value == 1:
+                rovnice = hodnoty_mm
+            elif radio_value == 2:
+                rovnice = hodnoty_mbar
+                prepocet = hodnoty_mV2mbar
+            elif radio_value == 3:
+                # cur.execute("SELECT * FROM sval5_mv2bar WHERE id IN (1, 2)")
+                rovnice = hodnoty_mv
 
 
+            results = []
 
-            # Vytvoření slovníku pro objekty b1, b2, atd.
-            global b_objects
-            b_objects = {
-                1: b1,
-                2: b2,
-                3: b3,
-                4: b4,
-                5: b5
-            }
-
-            if Minuly_Sval != Zvoleny_Sval:
-                if Minuly_Sval in b_objects:
-                    for i in range(1, x):
-                        b_objects[Minuly_Sval].go_backward(Speed, Steps)
-                        time.sleep(3)
-
-                worksheet.cell(row=1, column=1, value="Počet krokůmotoru")
-                worksheet.cell(row=1, column=2, value="Hodnota v mV")
-                worksheet.cell(row=1, column=3, value="Hodnota fyzického senzoru")
-                worksheet.cell(row=1, column=4, value="Rychlost")
-                desktop_path = Path.home() / "Desktop"
-                workbook.save(desktop_path / f"sval{Minuly_Sval}.xlsx")
-
-                print("změna svalu")
-                x = 1
-                y = 0
-                Minuly_Sval = Zvoleny_Sval
-                pokracovat = False
-                self.main_button_2.configure(state='enable')
-
-            if pokracovat == True:
-                if Zvoleny_Sval in b_objects:
-                    b_object = b_objects[Zvoleny_Sval]
-
-                    b_object.on()
-                    Speed = self.entrySpeed.get()
-                    Steps = self.entrySteps.get()
-                    # Tady se nám počítá kolik udělal motor celkově kroků
-                    y = y + int(Steps)
-                    x = x + 1
-                    b_object.go_forward(Steps, Speed)
-                    time.sleep(3)
-                    worksheet.cell(row=x, column=1, value=y)  # počet kroků motoru
-                    # Zde se načítá ze senzoru může být problém
-                    worksheet.cell(row=x, column=2, value=str(b_object.readA0()))
-                    # hodnota v mv
-                    worksheet.cell(row=x, column=3, value=self.entry.get())
-                    # hodnota Rychlosti
-                    worksheet.cell(row=x, column=4, value=Speed)
-                    Minuly_Sval = Zvoleny_Sval
-                    self.entry.delete(0, 10000)
-                    print(x)
-                else:
-                    print("Neplatný Zvoleny_Sval")
-
-    def open_input_dialog_event(self):
-        dialog = customtkinter.CTkInputDialog(
-            text="Type in a number:", title="CTkInputDialog")
-        print("CTkInputDialog:", dialog.get_input())
-
-    def change_appearance_mode_event(self, new_appearance_mode: str):
-        customtkinter.set_appearance_mode(new_appearance_mode)
-
-    def getRadiVar(self):
-        print("Počáteční hodnota:", self.radio_var.get())
-
-    def radiobutton_event(self):
-        global Zvoleny_Sval
-
-        selected_value = self.radio_var.get()
-
-        if 1 <= selected_value <= 5:
-            print(f"Sval {selected_value}")
-            Zvoleny_Sval = selected_value
-        else:
-            print("Neznámý sval")
-
-    def technicka_nula(self):
-        global svaly
-        svaly = {
+            svaly = {
                 0: b1,
                 1: b2,
                 2: b3,
@@ -326,171 +261,137 @@ class mesuremenWindow(customtkinter.CTkToplevel):
                 4: b5
             }
 
-        brokenMuscle = 3
-
-        while True:  
-            results = [sval.readA0() for sval in svaly.values()]
-
-            all_in_range = all(595 <= result <= 610 for i, result in enumerate(results) if i != brokenMuscle)
-
-            if all_in_range:
-                break  
+            for index, entry in enumerate(entry_values, start=1):
             
+
+                if radio_value == 4: #pokud dělám jenom kroky tak nemusím nic počítat
+                    result = int(entry)
+
+                else:
+
+                    akt_hod_mV = svaly[index-1].readA0() #získání aktuální hodnoty v mV 
+
+                    if entry !=0:
+
+                        if radio_value == 3:
+                            start_hodnta = akt_hod_mV 
+                        elif radio_value == 1: #! z mV Na mm
+                            start_hodnta = akt_hod_mV #převedení hodnoty na správné jednotky
+                        elif radio_value == 2: #! z mV na mbar
+                            sklon = prepocet[index]['sklon']
+                            posun = prepocet[index]['posun']
+                            start_hodnta =sklon * akt_hod_mV + posun #převedení hodnoty na správné jednotky
+
+                        konecna_hodnota = float(start_hodnta) + float(entry)  #získání hodnoty na kterou se chceme dostat pomocí startovní + posunu
+
+                        sklon = rovnice[index]['sklon']
+                        posun = rovnice[index]['posun']
+
+                        kon_kroky = (konecna_hodnota - posun) / sklon #přepočet na kroky
+                        start_kroky = float((start_hodnta - posun) / sklon) #přepočet na kroky
+
+                        result = kon_kroky - start_kroky #spočítání nutných kroků
+                    else:
+                        result = 0
+                aktualni_poz[index-1] += result
+                results.append(result)
+
+
+
+
+
+            progressbars = [self.progressbar1, self.progressbar2, self.progressbar3, self.progressbar4, self.progressbar5]
+
             for i in range(5):
-                if i==brokenMuscle:
-                    continue
-                
-                if results[i] >= 615:
-                    svaly[i].go_backward(10, 10)
-                elif results[i] <= 595:
-                    svaly[i].go_forward(10, 10)
-
-
+                if results[i] > 0:
+                    svaly[i].go_forward(10, results[i])
+                    #time.sleep(2)
+                elif results[i] < 0:
+                    svaly[i].go_backward(10, -results[i])
             time.sleep(3)
+            for i in range(5):
+                print(svaly[i].readA0())
+                b = (svaly[i].readA0() - minHodnotaSvalu) / (maxHodnotaSvalu - minHodnotaSvalu)
+                progressbars[i].set(b)
+    
 
 
-class databaseWindow(customtkinter.CTkToplevel):
+class RightFrame(customtkinter.CTkFrame):
+    def __init__(self, master, **kwargs):
+        super().__init__(master, **kwargs)
+        global radio_var
+
+        # add widgets onto the frame, for example:
+        self.label = customtkinter.CTkLabel(self, text="right frame")
+        self.label.grid(row=0, column=0, padx=20)
+
+        radio_var = customtkinter.IntVar(value=0)
+        self.radiobutton_1 = customtkinter.CTkRadioButton(self, text="mm",
+                                                          command=self.radiobutton_event, variable=radio_var, value=1)
+        self.radiobutton_1.grid(row=1, column=0, padx=20, pady=10)
+
+        self.radiobutton_2 = customtkinter.CTkRadioButton(self, text="mbar",
+                                                          command=self.radiobutton_event, variable=radio_var, value=2)
+        self.radiobutton_2.grid(row=2, column=0, padx=20, pady=10)
+
+        self.radiobutton_3 = customtkinter.CTkRadioButton(self, text="mV",
+                                                          command=self.radiobutton_event, variable=radio_var, value=3)
+        self.radiobutton_3.grid(row=3, column=0, padx=20, pady=10)
+
+        self.radiobutton_3 = customtkinter.CTkRadioButton(self, text="kroky",
+                                                          command=self.radiobutton_event, variable=radio_var, value=4)
+        self.radiobutton_3.grid(row=4, column=0, padx=20, pady=10)
+
+        self.back2Main_button = customtkinter.CTkButton(self, text="Main", command= master.back2Main) # button for login
+        self.back2Main_button.grid(row=7, column=0, padx=20, pady=10)
+
+
+    def radiobutton_event(self):
+        print("radiobutton toggled, current value:", radio_var.get())
+
+
+class GUI(customtkinter.CTkToplevel):
     def __init__(self, mainwindow, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Set window size
-        width = 1840
-        height = 800
-        
-        # Automatic calculation position of window based on monitor size
+        width = 1060
+        height = 400
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         screen_x = (screen_width - width) // 2
         screen_y = (screen_height - height) // 2
-        self.title("database")
 
         # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
+        
+
+        self.grid_rowconfigure(0, weight=1)
+        self.grid_columnconfigure(1, weight=1)
+
+        self.left_frame = LeftFrame(master=self)
+        self.left_frame.grid(row=0, column=0, pady=20, sticky="nsew")
+
+        self.main_frame = MainFrame(master=self)
+        self.main_frame.grid(row=0, column=1, padx=20, pady=20, sticky="nsew")
+
+        self.right_frame = RightFrame(master=self)
+        self.right_frame.grid(row=0, column=2, pady=20, sticky="nsew")
+
+        print(b1.readA0())
+        print(b2.readA0())
+        print(b3.readA0())
+        print(b4.readA0())
+        print(b5.readA0())
 
         self.mainwindow = mainwindow
 
-        
-        self.start()
-
-    def start(self):
-        
-        self.load_table("sval1_mm", 0)
-        self.load_table("sval1_mv", 2)
-        self.load_table("sval1_mbar", 4)
-        self.load_table("sval1_mv2bar", 6)
-
-    def load_table(self, table_name, column):
-        global radek
-        radek = 1
-
-        self.label_auto = customtkinter.CTkLabel(self, text=table_name)
-        self.label_auto.grid(row=0, column=column, padx=10, pady=10)
-
-        self.button_vytvor = customtkinter.CTkButton(self,width= 30, text="nový", command=lambda table_name=table_name: self.vytvorit_mereni(table_name, column))
-        self.button_vytvor.grid(row=0, column=column + 1, padx=10)
-
-        self.back2Admin_button = customtkinter.CTkButton(self, text="Hl Admin", command=self.back2AdminWindow, width=20)
-        self.back2Admin_button.grid(row=400, column=3, pady = 30)
-
-        self.nacist_z_db(table_name, column)
-
-    def nacist_z_db(self, table_name, column):
-        global radek
-        connection = sqlite3.connect('database.db')
-        cursor = connection.cursor()
-        cursor.execute(f"SELECT id, sklon, posun, popis FROM {table_name}")        
-        data = cursor.fetchall()
-        cursor.close()
-        connection.close()
-
-        for row in data:
-            id_vzorce, sklon, posun, popis = row
-            frame = customtkinter.CTkFrame(self)
-            frame.grid(row=id_vzorce, column=column, padx=10, pady=5)
-
-            entry_sklon = customtkinter.CTkEntry(frame, width=80)
-            entry_sklon.insert(0, sklon)
-            entry_sklon.grid(row=0, column=0, padx=5)
-
-            entry_posun = customtkinter.CTkEntry(frame, width=80)
-            entry_posun.insert(0, posun)
-            entry_posun.grid(row=0, column=1, padx=5)
-
-            entry_popis = customtkinter.CTkEntry(frame, width=120)
-            entry_popis.insert(0, popis)
-            entry_popis.grid(row=0, column=2, padx=5)
-
-            button_ulozit = customtkinter.CTkButton(frame, width=20, text="Upravit", command=lambda id=id_vzorce, entry_sklon=entry_sklon, entry_posun=entry_posun, entry_popis=entry_popis: self.ulozit_do_databaze(id, entry_sklon.get(), entry_posun.get(), entry_popis.get(), table_name))
-            button_ulozit.grid(row=0, column=3, padx=5)
-
-            radek += 1
-
-    def vytvorit_mereni(self, table_name, column):
-        frame = customtkinter.CTkFrame(self)
-        # Zjistit počet widgetů ve sloupci a nastavit řádek pro nový rámec
-        row = len(self.grid_slaves(column=column)) + 1
-        frame.grid(row=row, column=column, padx=10, pady=5)
-
-        self.entry_vyt_posun = customtkinter.CTkEntry(frame, width=80)
-        self.entry_vyt_posun.grid(row=0, column=0)
-
-        self.entry_vyt_sklon = customtkinter.CTkEntry(frame, width=80)
-        self.entry_vyt_sklon.grid(row=0, column=1, pady=5)
-
-        self.entry_vyt_popis = customtkinter.CTkEntry(frame, width=120)
-        self.entry_vyt_popis.grid(row=0, column=2, pady=5)
-
-        self.button_ulozit = customtkinter.CTkButton(frame, width=20, text="Uložit", command=lambda table_name=table_name, column=column, frame=frame: self.vlozit_do_databaze(table_name, column, frame))
-        self.button_ulozit.grid(row=0, column=3)
-
-    def ulozit_do_databaze(self, id_vzorce, sklon, posun, popis, table_name):
-        if sklon and posun and popis:
-            try:
-                connection = sqlite3.connect('database.db')
-                cursor = connection.cursor()
-                cursor.execute(f"UPDATE {table_name} SET sklon=?, posun=?, popis=? WHERE id=?", (sklon, posun, popis, id_vzorce))
-                cursor.execute(f"UPDATE sval1 SET {table_name}=? WHERE id=?", (id_vzorce,1))
-                connection.commit()
-                connection.close()
-                print("Změny byly úspěšně uloženy.")
-
-                for widget in self.winfo_children():
-                    widget.destroy()
-
-                self.start()
-
-            except sqlite3.Error as error:
-                print("Chyba při ukládání změn do databáze:", error)
-        else:
-            print("Prosím, vyplňte všechny pole.")
-
-        
-
-        
-
-    def vlozit_do_databaze(self, table_name, column, frame):
-        sklon = self.entry_vyt_posun.get()
-        posun = self.entry_vyt_sklon.get()
-        popis = self.entry_vyt_popis.get()
-        if sklon and posun and popis:
-            try:
-                connection = sqlite3.connect('database.db')
-                cursor = connection.cursor()
-                cursor.execute(f"INSERT INTO {table_name} (sklon, posun, popis) VALUES (?, ?, ?)", (sklon, posun, popis))
-                connection.commit()
-                connection.close()
-                print("Záznam byl úspěšně uložen do databáze.")
-
-                # Odstranění všech prvků (widgetů) z rámců
-                frame.destroy()
-
-                # Aktualizovat zobrazení databáze
-                self.nacist_z_db(table_name, column)
-            except sqlite3.Error as error:
-                print("Chyba při ukládání do databáze:", error)
-        else:
-            print("Některá pole nejsou vyplněna.")
-
-
-    def back2AdminWindow(self):
+    def back2Main(self):
         self.withdraw()
         self.mainwindow.deiconify()
+
+
+
+
+
+
+

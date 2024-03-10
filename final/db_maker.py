@@ -128,23 +128,27 @@ cur = conn.cursor()
 #  
 #                    ''')
 
-cur.execute('''CREATE TABLE IF NOT EXISTS sval5_mm (
-                     id INTEGER PRIMARY KEY,
-                     sklon INTEGER NOT NULL,
-                     posun INTEGER NOT NULL,
-                     popis TEXT NOT NULL)
-                     ''')
-cur.execute("INSERT INTO sval5_mm (sklon, posun, popis) VALUES (?,?,?)", (1, 1, "zakladni vzorec"))
+# cur.execute('''CREATE TABLE IF NOT EXISTS sval5_mm (
+#                      id INTEGER PRIMARY KEY,
+#                      sklon INTEGER NOT NULL,
+#                      posun INTEGER NOT NULL,
+#                      popis TEXT NOT NULL)
+#                      ''')
+#cur.execute("DELETE FROM sval1_mbar WHERE id NOT IN (1, 2)")
+cur.execute("SELECT * FROM sval1_mv WHERE id IN (1)")
+rows = cur.fetchall()
 
+for row in rows:
+    print(row)
 
-cur.execute('''CREATE TABLE IF NOT EXISTS sval5(
-                     id INTEGER PRIMARY KEY,
-                     sval5_mm INTEGER NOT NULL,
-                     sval5_mv INTEGER NOT NULL,
-                     sval5_mbar INTEGER NOT NULL,
-                     sval5_mv2bar INTEGER NOT NULL)
-                     ''')
-cur.execute("INSERT INTO sval5 (sval5_mm, sval5_mv, sval5_mbar, sval5_mv2bar) VALUES (?,?,?,?)", (1, 1, 1, 1))
+# cur.execute('''CREATE TABLE IF NOT EXISTS sval5(
+#                      id INTEGER PRIMARY KEY,
+#                      sval5_mm INTEGER NOT NULL,
+#                      sval5_mv INTEGER NOT NULL,
+#                      sval5_mbar INTEGER NOT NULL,
+#                      sval5_mv2bar INTEGER NOT NULL)
+#                      ''')
+# cur.execute("INSERT INTO sval5 (sval5_mm, sval5_mv, sval5_mbar, sval5_mv2bar) VALUES (?,?,?,?)", (1, 1, 1, 1))
 
 
 conn.commit()

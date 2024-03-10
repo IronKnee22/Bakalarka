@@ -3,6 +3,8 @@ import customtkinter
 import re
 from tkinter import messagebox
 
+import sqlite3
+
 from PneumoCVUTFBMI.DeviceLoader import DeviceLoader
 
 dl = DeviceLoader()
@@ -209,6 +211,8 @@ class MainFrame(customtkinter.CTkFrame):
             return True
 
     def button_event(self):
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
         
         sval1= self.entry1.get()
         sval2= self.entry2.get()
@@ -225,25 +229,17 @@ class MainFrame(customtkinter.CTkFrame):
             entry_values = [self.entry1.get(), self.entry2.get(), self.entry3.get(), self.entry4.get(), self.entry5.get()]
             entry_values = [0 if not value else value for value in entry_values]
 
-            hodnoty_mm = {1: {'sklon': 3, 'posun': 2}, 2: {'sklon': 5, 'posun': 7}, 3: {'sklon': 1, 'posun': 4},
-                          4: {'sklon': 8, 'posun': 6}, 5: {'sklon': 2, 'posun': 9}}
-
-            hodnoty_mv = {1: {'sklon': 2.38651, 'posun': 577.5167}, 2: {'sklon': 2.29055, 'posun': 572.351667}, 3: {'sklon': 1.83595, 'posun': 571.84},
-                          4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 1.61845, 'posun': 584.616667}}
-
-            hodnoty_mbar = {1: {'sklon': 0.38744, 'posun': -2.5647}, 2: {'sklon': 0.36835, 'posun': -2.9516}, 3: {'sklon': 0.272308, 'posun': -3.793866},
-                            4: {'sklon': 0, 'posun': 1}, 5: {'sklon': 0.264, 'posun': 1.3979}}
-
-            hodnoty_mV2mbar = {1: {'sklon': 0.162317, 'posun': -96.3022}, 2: {'sklon': 0.160467, 'posun': -94.54083}, 3: {'sklon': 0.15915, 'posun': -94.7982},
-                          4: {'sklon': 0, 'posun': 0}, 5: {'sklon': 0.163467, 'posun': -94.1682}}
+            
 
             if radio_value == 1:
-                rovnice = hodnoty_mm
+                #rovnice = hodnoty_mm
+                jednotka = "mm"
             elif radio_value == 2:
-                rovnice = hodnoty_mbar
-                prepocet = hodnoty_mV2mbar
-            elif radio_value == 3:
-                rovnice = hodnoty_mv
+                #rovnice = hodnoty_mbar
+                prepocet_jednotka = "mV2bar"
+                jednotka = "mbar"
+            elif radio_value == 3:                
+                jednotka = "mv"
 
 
             results = []
@@ -257,6 +253,11 @@ class MainFrame(customtkinter.CTkFrame):
             }
 
             for index, entry in enumerate(entry_values, start=1):
+
+                cur.execute(f"SELECT sval{index}_{jednotka} FROM sval{index}")
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_{jednotka} WHERE id IN ({int(cislo_vzorce[0])})")
+                rovnice = cur.fetchall()
             
 
                 if radio_value == 4: #pokud dělám jenom kroky tak nemusím nic počítat
@@ -273,14 +274,16 @@ class MainFrame(customtkinter.CTkFrame):
                         elif radio_value == 1: #! z mV Na mm
                             start_hodnta = akt_hod_mV #převedení hodnoty na správné jednotky
                         elif radio_value == 2: #! z mV na mbar
-                            sklon = prepocet[index]['sklon']
-                            posun = prepocet[index]['posun']
+                            cur.execute(f"SELECT * FROM sval{index}_{prepocet_jednotka} WHERE id IN ({int(cislo_vzorce[0])})")
+                            prepocet = cur.fetchall()
+                            sklon = prepocet[0][1]
+                            posun = prepocet[0][2]
                             start_hodnta =sklon * akt_hod_mV + posun #převedení hodnoty na správné jednotky
 
                         konecna_hodnota = float(start_hodnta) + float(entry)  #získání hodnoty na kterou se chceme dostat pomocí startovní + posunu
 
-                        sklon = rovnice[index]['sklon']
-                        posun = rovnice[index]['posun']
+                        sklon = rovnice[0][1]
+                        posun = rovnice[0][2]
 
                         kon_kroky = (konecna_hodnota - posun) / sklon #přepočet na kroky
                         start_kroky = float((start_hodnta - posun) / sklon) #přepočet na kroky

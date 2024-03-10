@@ -38,8 +38,8 @@ class adminWindow(customtkinter.CTkToplevel):
 
         # self.technicka_nula() # tohle se bude řešit teprve až to bude
         # Set window size
-        width = 300
-        height = 150
+        width = 480
+        height = 240
         
         # Automatic calculation position of window based on monitor size
         screen_width = self.winfo_screenwidth()
@@ -52,13 +52,25 @@ class adminWindow(customtkinter.CTkToplevel):
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
 
         self.measure_button = customtkinter.CTkButton(self, text="Měření", command= self.mesureWindow) # button for login
-        self.measure_button.pack(side="top", pady = 10)
+        self.measure_button.grid(row =0,column = 1, pady = 10, padx =10)
 
-        self.db_button = customtkinter.CTkButton(self, text="Databáze", command= self.databaseWindow) # button for login
-        self.db_button.pack(side="top", pady = 10)
+        self.db_button_sval1 = customtkinter.CTkButton(self, text="Sval1", command=lambda: self.databaseWindow("sval1"))
+        self.db_button_sval1.grid(row=1, column=0, pady=10, padx=10)
+
+        self.db_button_sval2 = customtkinter.CTkButton(self, text="Sval2", command=lambda: self.databaseWindow("sval2"))
+        self.db_button_sval2.grid(row=1, column=2, pady=10, padx=10)
+
+        self.db_button_sval3 = customtkinter.CTkButton(self, text="Sval3", command=lambda: self.databaseWindow("sval3"))
+        self.db_button_sval3.grid(row=3, column=0, pady=10, padx=10)
+
+        self.db_button_sval4 = customtkinter.CTkButton(self, text="Sval4", command=lambda: self.databaseWindow("sval4"))
+        self.db_button_sval4.grid(row=3, column=2, pady=10, padx=10)
+
+        self.db_button_sval5 = customtkinter.CTkButton(self, text="Sval5", command=lambda: self.databaseWindow("sval5"))
+        self.db_button_sval5.grid(row=2, column=1, pady=10, padx=10)
 
         self.home_button = customtkinter.CTkButton(self, text="Hlavní stránka", command= self.back2Main) # button for login
-        self.home_button.pack(side="bottom", pady = 10)
+        self.home_button.grid(row =4,column = 1, pady = 10, padx =10)
 
         self.mainwindow = mainwindow
     
@@ -66,8 +78,10 @@ class adminWindow(customtkinter.CTkToplevel):
         self.toplevel = mesuremenWindow(self,self)
         self.withdraw()
 
-    def databaseWindow(self):
-        self.toplevel = databaseWindow(self,self)
+    def databaseWindow(self,sval):
+        
+        self.toplevel = databaseWindow(self, sval)
+
         self.withdraw()
 
     def back2Main(self):
@@ -279,7 +293,7 @@ class mesuremenWindow(customtkinter.CTkToplevel):
                     # Tady se nám počítá kolik udělal motor celkově kroků
                     y = y + int(Steps)
                     x = x + 1
-                    b_object.go_forward(Steps, Speed)
+                    b_object.go_forward(Speed, Steps)
                     time.sleep(3)
                     worksheet.cell(row=x, column=1, value=y)  # počet kroků motoru
                     # Zde se načítá ze senzoru může být problém
@@ -350,33 +364,34 @@ class mesuremenWindow(customtkinter.CTkToplevel):
 
 
 class databaseWindow(customtkinter.CTkToplevel):
-    def __init__(self, mainwindow, *args, **kwargs):
+    def __init__(self, mainwindow, sval, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Set window size
         width = 1840
-        height = 800
+        height = 500
         
         # Automatic calculation position of window based on monitor size
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         screen_x = (screen_width - width) // 2
         screen_y = (screen_height - height) // 2
-        self.title("database")
+        self.title(sval)
 
         # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
 
         self.mainwindow = mainwindow
-
+        self.sval = sval
         
-        self.start()
+        self.start(sval)
 
-    def start(self):
+    def start(self, sval):
         
-        self.load_table("sval1_mm", 0)
-        self.load_table("sval1_mv", 2)
-        self.load_table("sval1_mbar", 4)
-        self.load_table("sval1_mv2bar", 6)
+        self.load_table(f"{sval}_mm", 0)
+        self.load_table(f"{sval}_mv", 2)
+        self.load_table(f"{sval}_mbar", 4)
+        self.load_table(f"{sval}_mv2bar", 6)
+
 
     def load_table(self, table_name, column):
         global radek
@@ -448,15 +463,16 @@ class databaseWindow(customtkinter.CTkToplevel):
                 connection = sqlite3.connect('database.db')
                 cursor = connection.cursor()
                 cursor.execute(f"UPDATE {table_name} SET sklon=?, posun=?, popis=? WHERE id=?", (sklon, posun, popis, id_vzorce))
-                cursor.execute(f"UPDATE sval1 SET {table_name}=? WHERE id=?", (id_vzorce,1))
+                cursor.execute(f"UPDATE {self.sval} SET {table_name}=? WHERE id=?", (id_vzorce,1))
                 connection.commit()
                 connection.close()
                 print("Změny byly úspěšně uloženy.")
 
                 for widget in self.winfo_children():
                     widget.destroy()
+                    
 
-                self.start()
+                self.start(self.sval)
 
             except sqlite3.Error as error:
                 print("Chyba při ukládání změn do databáze:", error)
