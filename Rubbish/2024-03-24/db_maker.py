@@ -135,8 +135,7 @@ cur = conn.cursor()
 #                      popis TEXT NOT NULL)
 #                      ''')
 #cur.execute("DELETE FROM sval1_mbar WHERE id NOT IN (1, 2)")
-# cur.execute("SELECT * FROM sval1_mv WHERE id IN (1)")
-cur.execute("SELECT sval1_mm FROM sval1 WHERE id IN (1)")
+cur.execute("SELECT * FROM sval1_mv WHERE id IN (1)")
 rows = cur.fetchall()
 
 for row in rows:

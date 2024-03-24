@@ -21,7 +21,7 @@ b3.on()
 b4.on()
 b5.on()
 
-maxHodnotaSvalu = 700
+maxHodnotaSvalu = 800
 minHodnotaSvalu = 550
 
 customtkinter.set_appearance_mode("light")
@@ -166,7 +166,7 @@ class MainFrame(customtkinter.CTkFrame):
         self.entry4.grid(row=9, column=2, padx=20, pady=10)
 
     def validate_1(self, value):
-        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        pattern = r'^-?\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
             self.entry1.delete(0, customtkinter.END)            
@@ -175,7 +175,7 @@ class MainFrame(customtkinter.CTkFrame):
             return True
     
     def validate_2(self, value):
-        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        pattern = r'^-?\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
             self.entry2.delete(0, customtkinter.END)            
@@ -184,7 +184,7 @@ class MainFrame(customtkinter.CTkFrame):
             return True
     
     def validate_3(self, value):
-        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        pattern = r'^-?\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
             self.entry3.delete(0, customtkinter.END)            
@@ -193,7 +193,7 @@ class MainFrame(customtkinter.CTkFrame):
             return True
     
     def validate_4(self, value):
-        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        pattern = r'^-?\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
             self.entry4.delete(0, customtkinter.END)            
@@ -202,7 +202,7 @@ class MainFrame(customtkinter.CTkFrame):
             return True
     
     def validate_5(self, value):
-        pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla
+        pattern = r'^-?\d+$'  # Regulární výraz přijímající pouze čísla
         if re.fullmatch(pattern, value) is None:
             messagebox.showerror("Chybný vstup", "Prosím, zadejte pouze čísla. \nVstup nesmí být prázdný.")
             self.entry5.delete(0, customtkinter.END)            
@@ -211,6 +211,7 @@ class MainFrame(customtkinter.CTkFrame):
             return True
 
     def button_event(self):
+        
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
         
@@ -254,16 +255,18 @@ class MainFrame(customtkinter.CTkFrame):
 
             for index, entry in enumerate(entry_values, start=1):
 
-                cur.execute(f"SELECT sval{index}_{jednotka} FROM sval{index}")
-                cislo_vzorce = cur.fetchone()
-                cur.execute(f"SELECT * FROM sval{index}_{jednotka} WHERE id IN ({int(cislo_vzorce[0])})")
-                rovnice = cur.fetchall()
+                
             
 
                 if radio_value == 4: #pokud dělám jenom kroky tak nemusím nic počítat
                     result = int(entry)
 
                 else:
+
+                    cur.execute(f"SELECT sval{index}_{jednotka} FROM sval{index}")
+                    cislo_vzorce = cur.fetchone()
+                    cur.execute(f"SELECT * FROM sval{index}_{jednotka} WHERE id IN ({int(cislo_vzorce[0])})")
+                    rovnice = cur.fetchall()
 
                     akt_hod_mV = svaly[index-1].readA0() #získání aktuální hodnoty v mV 
 
@@ -352,7 +355,7 @@ class GUI(customtkinter.CTkToplevel):
     def __init__(self, mainwindow, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Set window size
-        width = 1060
+        width = 1100
         height = 400
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
@@ -362,6 +365,7 @@ class GUI(customtkinter.CTkToplevel):
         # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
         
+        self.protocol("WM_DELETE_WINDOW", self.execute_after_close)
 
         self.grid_rowconfigure(0, weight=1)
         self.grid_columnconfigure(1, weight=1)
@@ -387,8 +391,40 @@ class GUI(customtkinter.CTkToplevel):
         self.withdraw()
         self.mainwindow.deiconify()
 
+    def execute_after_close(self):
+        self.destroy()
+        svaly = {
+            0: b1,
+            1: b2,
+            2: b3,
+            3: b4,
+            4: b5
+            }       
+
+        brokenMuscle = 1
+
+        while True:  
+            results = [sval.readA0() for sval in svaly.values()]
+
+            all_in_range = all(600 <= result <= 620 for i, result in enumerate(results) if i != brokenMuscle)
+
+            if all_in_range:
+                break  
+            
+            for i in range(5):
+                if i==brokenMuscle:
+                    continue
+                
+                if results[i] >= 620:
+                    svaly[i].go_backward(20, 10)
+                elif results[i] <= 600:
+                    svaly[i].go_forward(20,10)
 
 
+            time.sleep(3)
+        
+        self.quit()
+    
 
 
 

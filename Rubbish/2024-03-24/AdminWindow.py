@@ -102,8 +102,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         screen_y = (screen_height - height) // 2
         self.title("mesure")
 
-        self.protocol("WM_DELETE_WINDOW", self.execute_after_close)
-
         # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
 
@@ -364,40 +362,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
 
             time.sleep(3)
 
-    def execute_after_close(self):
-        self.destroy()
-        svaly = {
-            0: b1,
-            1: b2,
-            2: b3,
-            3: b4,
-            4: b5
-            }       
-
-        brokenMuscle = 1
-
-        while True:  
-            results = [sval.readA0() for sval in svaly.values()]
-
-            all_in_range = all(600 <= result <= 620 for i, result in enumerate(results) if i != brokenMuscle)
-
-            if all_in_range:
-                break  
-            
-            for i in range(5):
-                if i==brokenMuscle:
-                    continue
-                
-                if results[i] >= 620:
-                    svaly[i].go_backward(20, 10)
-                elif results[i] <= 600:
-                    svaly[i].go_forward(20,10)
-
-
-            time.sleep(3)
-
-        self.quit()
-
 
 class databaseWindow(customtkinter.CTkToplevel):
     def __init__(self, mainwindow, sval, *args, **kwargs):
@@ -412,8 +376,6 @@ class databaseWindow(customtkinter.CTkToplevel):
         screen_x = (screen_width - width) // 2
         screen_y = (screen_height - height) // 2
         self.title(sval)
-
-        
 
         # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
@@ -434,13 +396,8 @@ class databaseWindow(customtkinter.CTkToplevel):
     def load_table(self, table_name, column):
         global radek
         radek = 1
-        
-        connection = sqlite3.connect('database.db')
-        cursor = connection.cursor()
-        cursor.execute(f"SELECT {table_name} FROM {table_name[:5]} WHERE id IN (1)")
-        rows = cursor.fetchone()
-        
-        self.label_auto = customtkinter.CTkLabel(self, text=f"{table_name}: {rows[0]}" )
+
+        self.label_auto = customtkinter.CTkLabel(self, text=table_name)
         self.label_auto.grid(row=0, column=column, padx=10, pady=10)
 
         self.button_vytvor = customtkinter.CTkButton(self,width= 30, text="nový", command=lambda table_name=table_name: self.vytvorit_mereni(table_name, column))
@@ -489,16 +446,16 @@ class databaseWindow(customtkinter.CTkToplevel):
         frame.grid(row=row, column=column, padx=10, pady=5)
 
         self.entry_vyt_posun = customtkinter.CTkEntry(frame, width=80)
-        self.entry_vyt_posun.grid(row=0, column=0,padx=5)
+        self.entry_vyt_posun.grid(row=0, column=0)
 
         self.entry_vyt_sklon = customtkinter.CTkEntry(frame, width=80)
-        self.entry_vyt_sklon.grid(row=0, column=1, padx=5)
+        self.entry_vyt_sklon.grid(row=0, column=1, pady=5)
 
         self.entry_vyt_popis = customtkinter.CTkEntry(frame, width=120)
-        self.entry_vyt_popis.grid(row=0, column=2, padx=5)
+        self.entry_vyt_popis.grid(row=0, column=2, pady=5)
 
         self.button_ulozit = customtkinter.CTkButton(frame, width=20, text="Uložit", command=lambda table_name=table_name, column=column, frame=frame: self.vlozit_do_databaze(table_name, column, frame))
-        self.button_ulozit.grid(row=0, column=3, padx=5)
+        self.button_ulozit.grid(row=0, column=3)
 
     def ulozit_do_databaze(self, id_vzorce, sklon, posun, popis, table_name):
         if sklon and posun and popis:
@@ -553,5 +510,3 @@ class databaseWindow(customtkinter.CTkToplevel):
     def back2AdminWindow(self):
         self.withdraw()
         self.mainwindow.deiconify()
-
-    
