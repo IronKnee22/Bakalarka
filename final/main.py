@@ -49,8 +49,8 @@ class App(customtkinter.CTk):
 
         self.login_button = customtkinter.CTkButton(self, text="Přihlášení", command= self.login) # button for login
         self.login_button.pack(side="top", pady = 10)
-        self.bind("<Return>", lambda event: self.login()) # it works on enter FUCK YES
-
+        self.bind("<Return>", lambda event: self.login()) 
+        
         self.reject_label = customtkinter.CTkLabel(self, text=" ")
         self.reject_label.pack(side="top")
 

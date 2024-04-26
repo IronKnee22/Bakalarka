@@ -403,7 +403,7 @@ class databaseWindow(customtkinter.CTkToplevel):
     def __init__(self, mainwindow, sval, *args, **kwargs):
         super().__init__(*args, **kwargs)
         # Set window size
-        width = 1840
+        width = 1400
         height = 500
         
         # Automatic calculation position of window based on monitor size
@@ -425,10 +425,9 @@ class databaseWindow(customtkinter.CTkToplevel):
 
     def start(self, sval):
         
-        self.load_table(f"{sval}_mm", 0)
-        self.load_table(f"{sval}_mv", 2)
-        self.load_table(f"{sval}_mbar", 4)
-        self.load_table(f"{sval}_mv2bar", 6)
+        self.load_table(f"{sval}_mv", 0)
+        self.load_table(f"{sval}_mbar", 2)
+        self.load_table(f"{sval}_mv2bar", 4)
 
 
     def load_table(self, table_name, column):
