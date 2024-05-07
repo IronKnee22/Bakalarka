@@ -21,7 +21,7 @@ b3.on()
 b4.on()
 b5.on()
 
-maxHodnotaSvalu = 800
+maxHodnotaSvalu = 2800
 minHodnotaSvalu = 550
 
 customtkinter.set_appearance_mode("light")
@@ -299,13 +299,15 @@ class MainFrame(customtkinter.CTkFrame):
                     else:
                         result = 0
 
-                cur.execute(f"SELECT sval{index}_{jednotka} FROM sval{index}") # tady se načte vždycky přepočet na 
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte vždycky přepočet na 
                 cislo_vzorce = cur.fetchone()
                 cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")
                 rovnice_kon_doraz = cur.fetchall()
 
                 sklon_kon_doraz = rovnice_kon_doraz[0][1]
                 posun_kon_doraz = rovnice_kon_doraz[0][2]
+
+                akt_hod_mV = svaly[index-1].readA0() #získání aktuální hodnoty v mV 
 
                 aktualni_kroky = (akt_hod_mV - posun_kon_doraz) / sklon_kon_doraz
                 aktualni_kroky += result

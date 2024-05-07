@@ -924,6 +924,10 @@ class mesuremenWindow(customtkinter.CTkToplevel):
             time.sleep(3)
 
     def execute_after_close(self):
+
+        desktop_path = Path.home() / "Desktop"
+        workbook.save(desktop_path / f"sval{Minuly_Sval}.xlsx")
+        
         self.destroy()
         svaly = {
             0: b1,
@@ -1005,7 +1009,7 @@ class databaseWindow(customtkinter.CTkToplevel):
         self.button_vytvor.grid(row=0, column=column + 1, padx=10)
 
         self.back2Admin_button = customtkinter.CTkButton(self, text="Hl Admin", command=self.back2AdminWindow, width=20)
-        self.back2Admin_button.grid(row=400, column=3, pady = 30)
+        self.back2Admin_button.grid(row=400, column=2, pady = 30)
 
         self.nacist_z_db(table_name, column)
 
