@@ -1,16 +1,21 @@
-import sqlite3
+from PneumoCVUTFBMI.DeviceLoader import DeviceLoader
 
-conn = sqlite3.connect('database.db')
-cur = conn.cursor()
+dl = DeviceLoader()
 
-sval = "sval1"
-jednotka = "mv"
+b1 = dl.getBoard1()
+b2 = dl.getBoard2()
+b3 = dl.getBoard3()
+b4 = dl.getBoard4()
+b5 = dl.getBoard5()
 
-cur.execute(f"SELECT {sval}_{jednotka} FROM {sval}")
-cislo_vzorce = cur.fetchone()
+b1.on()
+b2.on()
+b3.on()
+b4.on()
+b5.on()
 
-
-cur.execute(f"SELECT * FROM {sval}_{jednotka} WHERE id IN ({int(cislo_vzorce[0])})")
-rows = cur.fetchall()
-
-print(f"{rows[0][1]} {rows[0][2]}")
+b1.stop()
+b2.stop()
+b3.stop()
+b4.stop()
+b5.stop()

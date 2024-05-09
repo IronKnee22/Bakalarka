@@ -24,6 +24,13 @@ b5.on()
 maxHodnotaSvalu = 2800
 minHodnotaSvalu = 550
 
+sval1_dopredu = True
+sval2_dopredu = True
+sval3_dopredu = True
+sval4_dopredu = True
+
+
+
 customtkinter.set_appearance_mode("light")
 customtkinter.set_default_color_theme("blue")
 
@@ -35,23 +42,26 @@ class LeftFrame(customtkinter.CTkFrame):
         self.label.grid(row=0, column=0, padx=10)
 
         self.button1 = customtkinter.CTkButton(
-            self, text="Akce 1", command=self.button_event)
+            self, text="Technická nula", command=self.techncka_nula)
         self.button1.grid(row=1, column=0, padx=10, pady=10)
 
         self.button2 = customtkinter.CTkButton(
-            self, text="Akce 2", command=self.button_event)
+            self, text="Pracovní poloha", command=self.Pracovni_poloha)
         self.button2.grid(row=2, column=0, padx=10, pady=10)
 
         self.button3 = customtkinter.CTkButton(
-            self, text="Akce 3", command=self.button_event)
+            self, text="Levo pravo", command=self.levo_pravo)
         self.button3.grid(row=3, column=0, padx=10, pady=10)
 
         self.button4 = customtkinter.CTkButton(
-            self, text="Akce 4", command=self.button_event)
+            self, text="Nahoru dolu", command=self.button_event)
         self.button4.grid(row=4, column=0, padx=10, pady=10)
 
-        self.label2 = customtkinter.CTkLabel(self, text=" ")
-        self.label2.grid(row=5, column=0, padx=10)
+        self.button4 = customtkinter.CTkButton(
+            self, text="Kombinace", command=self.button_event)
+        self.button4.grid(row=5, column=0, padx=10, pady=10)
+
+        
 
         self.label1 = customtkinter.CTkLabel(self, text=" ")
         self.label1.grid(row=6, column=0, padx=10)
@@ -68,6 +78,8 @@ class LeftFrame(customtkinter.CTkFrame):
         self.switch.grid(row=10, column=0, padx=10)
 
 
+    def button_event(self):
+        print("ahoj")
 
     def switch_event(self):
         if (self.switch.get() == "on"):
@@ -77,8 +89,193 @@ class LeftFrame(customtkinter.CTkFrame):
             customtkinter.set_appearance_mode("light")
             self.switch.configure(text="Light Mode")
 
-    def button_event(self):
-        print("Akce")
+    def techncka_nula(self):
+        svaly = {
+            0: b1,
+            1: b2,
+            2: b3,
+            3: b4,
+            4: b5
+            }       
+
+        brokenMuscle = 1
+
+        while True:  
+            results = [sval.readA0() for sval in svaly.values()]
+
+            all_in_range = all(600 <= result <= 620 for i, result in enumerate(results) if i != brokenMuscle)
+
+            if all_in_range:
+                break  
+            
+            for i in range(5):
+                if i==brokenMuscle:
+                    continue
+                
+                if results[i] >= 620:
+                    svaly[i].go_backward(20, 10)
+                    
+                elif results[i] <= 600:
+                    svaly[i].go_forward(20,10)
+
+
+            time.sleep(1)
+
+    def Pracovni_poloha(self):
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
+
+        svaly = {
+                1: b1,
+                2: b5,
+                3: b3,
+                4: b4
+                
+            }
+
+        for index in range(1, 5):               
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (650 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+    def levo_pravo(self):
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
+
+        svaly = {
+                1: b1,
+                2: b5,
+                3: b3,
+                4: b4
+                
+            }
+
+        for index in [1, 3]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (700 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+        for index in [2, 4]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (630 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+
+        time.sleep(20)
+
+        for index in [1, 3]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (630 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+        for index in [2, 4]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (700 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+
+        time.sleep(20)
+
+        for index in range(1, 5):               
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (650 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+
+
+
+            
+
 
 
 class MainFrame(customtkinter.CTkFrame):
@@ -97,28 +294,34 @@ class MainFrame(customtkinter.CTkFrame):
         self.label_sval1 = customtkinter.CTkLabel(self, text="sval1")
         self.label_sval1.grid(row=1, column=0, padx=20)
 
+        self.label_sval1_mv = customtkinter.CTkLabel(self, text="")
+        self.label_sval1_mv.grid(row=2, column=0, padx=20)
+
         self.progressbar1 = customtkinter.CTkProgressBar(
             self, orientation="horizontal")
-        self.progressbar1.grid(row=2, column=0, padx=20)
+        self.progressbar1.grid(row=3, column=0, padx=20)
         self.progressbar1.set((b1.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
-
-
 
         self.entry1 = customtkinter.CTkEntry(self, placeholder_text="entry")
         self.entry1.configure(validate='focusout', validatecommand=(self.register(self.validate_1), '%P'))
-        self.entry1.grid(row=3, column=0, padx=20, pady=10)
+        self.entry1.grid(row=4, column=0, padx=20, pady=10)
+
+
 
         self.label_sval3 = customtkinter.CTkLabel(self, text="sval3")
         self.label_sval3.grid(row=7, column=0, padx=20)
 
+        self.label_sval3_mv = customtkinter.CTkLabel(self, text="")
+        self.label_sval3_mv.grid(row=8, column=0, padx=20)
+
         self.progressbar3 = customtkinter.CTkProgressBar(
             self, orientation="horizontal")
-        self.progressbar3.grid(row=8, column=0, padx=20)
+        self.progressbar3.grid(row=9, column=0, padx=20)
         self.progressbar3.set((b3.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry3 = customtkinter.CTkEntry(self, placeholder_text="entry3")
         self.entry3.configure(validate='focusout', validatecommand=(self.register(self.validate_3), '%P'))
-        self.entry3.grid(row=9, column=0, padx=20, pady=10)
+        self.entry3.grid(row=10, column=0, padx=20, pady=10)
 
         # ?druhý sloupec
         self.label = customtkinter.CTkLabel(self, text="main frame")
@@ -127,44 +330,69 @@ class MainFrame(customtkinter.CTkFrame):
         self.label_sval5 = customtkinter.CTkLabel(self, text="sval5")
         self.label_sval5.grid(row=4, column=1, padx=20)
 
+        self.label_sval5_mv = customtkinter.CTkLabel(self, text="")
+        self.label_sval5_mv.grid(row=5, column=1, padx=20)
+
         self.progressbar5 = customtkinter.CTkProgressBar(
             self, orientation="horizontal")
-        self.progressbar5.grid(row=5, column=1, padx=20)
-        self.progressbar5.set((b5.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
+        self.progressbar5.grid(row=6, column=1, padx=20)
+        self.progressbar5.set((b2.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry5 = customtkinter.CTkEntry(self, placeholder_text="entry5")
         self.entry5.configure(validate='focusout', validatecommand=(self.register(self.validate_5), '%P'))
-        self.entry5.grid(row=6, column=1, padx=20, pady=10)
+        self.entry5.grid(row=7, column=1, padx=20, pady=10)
 
         self.button = customtkinter.CTkButton(
             self, text="Spustit", command=self.button_event)
-        self.button.grid(row=10, column=1, padx=20, pady=10)
+        self.button.grid(row=11, column=1, padx=20, pady=10)
+
+        self.ziskani_mv_button = customtkinter.CTkButton(
+            self, text="Hodnoty svalu mV", command=self.hotnoty_svalu)
+        self.ziskani_mv_button.grid(row=12, column=1, padx=20, pady=10)
         
 
         # ?třetí sloupec
         self.label_sval2 = customtkinter.CTkLabel(self, text="sval2")
         self.label_sval2.grid(row=1, column=2, padx=20)
 
+        self.label_sval2_mv = customtkinter.CTkLabel(self, text="")
+        self.label_sval2_mv.grid(row=2, column=2, padx=20)
+
         self.progressbar2 = customtkinter.CTkProgressBar(
             self, orientation="horizontal")
-        self.progressbar2.grid(row=2, column=2, padx=20)
-        self.progressbar2.set((b2.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
+        self.progressbar2.grid(row=3, column=2, padx=20)
+        self.progressbar2.set((b5.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry2 = customtkinter.CTkEntry(self, placeholder_text="entry2")
         self.entry2.configure(validate='focusout', validatecommand=(self.register(self.validate_2), '%P'))
-        self.entry2.grid(row=3, column=2, padx=20, pady=10)
+        self.entry2.grid(row=4, column=2, padx=20, pady=10)
+
+
 
         self.label_sval4 = customtkinter.CTkLabel(self, text="sval4")
         self.label_sval4.grid(row=7, column=2, padx=20)
 
+        self.label_sval4_mv = customtkinter.CTkLabel(self, text="")
+        self.label_sval4_mv.grid(row=8, column=2, padx=20)
+
         self.progressbar4 = customtkinter.CTkProgressBar(
             self, orientation="horizontal")
-        self.progressbar4.grid(row=8, column=2, padx=20)
+        self.progressbar4.grid(row=9, column=2, padx=20)
         self.progressbar4.set((b4.readA0()-minHodnotaSvalu)/(maxHodnotaSvalu-minHodnotaSvalu))
 
         self.entry4 = customtkinter.CTkEntry(self, placeholder_text="entry4")
         self.entry4.configure(validate='focusout', validatecommand=(self.register(self.validate_4), '%P'))
-        self.entry4.grid(row=9, column=2, padx=20, pady=10)
+        self.entry4.grid(row=10, column=2, padx=20, pady=10)
+
+    def hotnoty_svalu(self):
+        self.label_sval1_mv.configure(text=str(b1.readA0()))
+        self.label_sval2_mv.configure(text=str(b5.readA0()))
+        self.label_sval3_mv.configure(text=str(b3.readA0()))
+        self.label_sval4_mv.configure(text=str(b4.readA0()))
+        self.label_sval5_mv.configure(text=str(b2.readA0()))
+
+
+
 
     def validate_1(self, value):
         pattern = r'^-?\d+$'  # Regulární výraz přijímající pouze čísla
@@ -217,10 +445,10 @@ class MainFrame(customtkinter.CTkFrame):
         cur = conn.cursor()
         
         sval1= self.entry1.get()
-        sval2= self.entry2.get()
+        sval2= self.entry5.get()
         sval3= self.entry3.get()
         sval4= self.entry4.get()
-        sval5= self.entry5.get()
+        sval5= self.entry2.get()
 
         if radio_var.get() == 0:
             messagebox.showerror("Chybí sval", "Prosím vyber sval")
@@ -248,10 +476,10 @@ class MainFrame(customtkinter.CTkFrame):
 
             svaly = {
                 0: b1,
-                1: b2,
+                1: b5,
                 2: b3,
                 3: b4,
-                4: b5
+                4: b2
             }
 
             for index, entry in enumerate(entry_values, start=1):
@@ -292,7 +520,7 @@ class MainFrame(customtkinter.CTkFrame):
                         start_kroky = float((start_hodnta - posun) / sklon) #přepočet na kroky
 
                         result = kon_kroky - start_kroky #spočítání nutných kroků
-
+                        result = round(result)
                         
 
 
@@ -313,7 +541,7 @@ class MainFrame(customtkinter.CTkFrame):
                 aktualni_kroky += result
 
                 budouci_napeti = sklon_kon_doraz * aktualni_kroky + posun_kon_doraz
-
+                print(f"počteční napětí svalu{index} je {akt_hod_mV} konečná má být {budouci_napeti}")
                 if(budouci_napeti < maxHodnotaSvalu and budouci_napeti > minHodnotaSvalu):
                     aktualni_poz[index-1] += result
                     results.append(result)
@@ -383,7 +611,7 @@ class GUI(customtkinter.CTkToplevel):
         super().__init__(*args, **kwargs)
         # Set window size
         width = 1100
-        height = 400
+        height = 440
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         screen_x = (screen_width - width) // 2
