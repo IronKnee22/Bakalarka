@@ -29,7 +29,7 @@ class App(customtkinter.CTk):
         # Set window size
         width = 300
         height = 150
-        self.title(" ")
+
         
         
         # Automatic calculation position of window based on monitor size

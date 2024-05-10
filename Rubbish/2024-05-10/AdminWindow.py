@@ -93,7 +93,7 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         super().__init__(*args, **kwargs)
         # Set window size
         width = 540
-        height = 280
+        height = 220
         
         # Automatic calculation position of window based on monitor size
         screen_width = self.winfo_screenwidth()
@@ -135,11 +135,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
             master=self.sidebar_frame, variable=self.radio_var, value=5, command=self.radiobutton_event, text="Sval 5")
         self.radio_button_5.grid(row=5, column=0)
 
-        self.main_button_3 = customtkinter.CTkButton(
-            master=self.sidebar_frame, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.back2AdminWindow, text="Hl admin")
-        self.main_button_3.grid(row=7, column=0, padx=(
-            20, 20), pady=(20, 20), sticky="nsew")
-
         # Apearence mode options
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
                                                                        command=self.change_appearance_mode_event)
@@ -158,17 +153,13 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         self.entrySteps = customtkinter.CTkEntry(
             self, placeholder_text="Steps")
         self.entrySteps.configure(validate='focusout', validatecommand=(self.register(self.validate_steps), '%P'))
-        self.entrySteps.grid(row=4, column=1, padx=(
+        self.entrySteps.grid(row=2, column=2, padx=(
             20, 0), pady=(20, 20), sticky="nsew")
 
         self.entry = customtkinter.CTkEntry(self, placeholder_text="Hw Value")
         self.entry.configure(validate='focusout', validatecommand=(self.register(self.validate_mbar), '%P'))
         self.entry.grid(row=3, column=1, padx=(20, 0),
                         pady=(20, 20), sticky="nsew")
-
-        self.button_tech_nula = customtkinter.CTkButton(
-            self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), text="Technická nula", command=self.techncka_nula)
-        self.button_tech_nula.grid(row=2, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         self.main_button_1 = customtkinter.CTkButton(
             self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.hw_value, text="krok")
@@ -185,42 +176,15 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         self.main_button_2.configure(state='disabled')
 
 
-        
+        self.main_button_3 = customtkinter.CTkButton(
+            self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.back2AdminWindow, text="Hl admin")
+        self.main_button_3.grid(row=4, column=1, padx=(
+            20, 20), pady=(20, 20), sticky="nsew")
         
         self.mainwindow = mainwindow
         
         
-    def techncka_nula(self):
-        svaly = {
-            0: b1,
-            1: b2,
-            2: b3,
-            3: b4,
-            4: b5
-            }       
-
-        brokenMuscle = 1
-
-        while True:  
-            results = [sval.readA0() for sval in svaly.values()]
-
-            all_in_range = all(600 <= result <= 620 for i, result in enumerate(results) if i != brokenMuscle)
-
-            if all_in_range:
-                break  
-            
-            for i in range(5):
-                if i==brokenMuscle:
-                    continue
-                
-                if results[i] >= 620:
-                    svaly[i].go_backward(20, 10)
-                    
-                elif results[i] <= 600:
-                    svaly[i].go_forward(20,10)
-
-
-            time.sleep(1)
+    
 
     def validate_speed(self, value):
         pattern = r'^\d+$'  # Regulární výraz přijímající pouze čísla

@@ -38,7 +38,7 @@ class LeftFrame(customtkinter.CTkFrame):
     def __init__(self, master, **kwargs):
         super().__init__(master, **kwargs)
 
-        self.label = customtkinter.CTkLabel(self, text="left frame")
+        self.label = customtkinter.CTkLabel(self, text="Akce",font=customtkinter.CTkFont(size=20, weight="bold"))
         self.label.grid(row=0, column=0, padx=10)
 
         self.button1 = customtkinter.CTkButton(
@@ -54,11 +54,11 @@ class LeftFrame(customtkinter.CTkFrame):
         self.button3.grid(row=3, column=0, padx=10, pady=10)
 
         self.button4 = customtkinter.CTkButton(
-            self, text="Nahoru dolu", command=self.button_event)
+            self, text="Nahoru dolu", command=self.nahoru_dolu)
         self.button4.grid(row=4, column=0, padx=10, pady=10)
 
         self.button4 = customtkinter.CTkButton(
-            self, text="Kombinace", command=self.button_event)
+            self, text="Kombinace", command=self.kombinace)
         self.button4.grid(row=5, column=0, padx=10, pady=10)
 
         
@@ -121,7 +121,7 @@ class LeftFrame(customtkinter.CTkFrame):
 
             time.sleep(1)
 
-    def Pracovni_poloha(self):
+    def Pracovni_poloha(self): # početně tohle sedí
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
 
@@ -148,12 +148,18 @@ class LeftFrame(customtkinter.CTkFrame):
 
             poc_kroku = kon_kroky - aktualni_kroky
             poc_kroku = round(poc_kroku)
-            print(f"abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+            print(svaly[index].get_steps_from_start())
 
             if poc_kroku != 0:
                 svaly[index].go_forward(10, poc_kroku)
 
-    def levo_pravo(self):
+        time.sleep(5)
+
+        for index in range(1, 5):    
+            print(f"sval{index} {svaly[index].get_steps_from_start()}")
+
+    def levo_pravo(self): # početně sedí
         conn = sqlite3.connect('database.db')
         cur = conn.cursor()
 
@@ -180,7 +186,7 @@ class LeftFrame(customtkinter.CTkFrame):
 
             poc_kroku = kon_kroky - aktualni_kroky
             poc_kroku = round(poc_kroku)
-            print(f"abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
 
             if poc_kroku != 0:
                 svaly[index].go_forward(10, poc_kroku)
@@ -200,13 +206,19 @@ class LeftFrame(customtkinter.CTkFrame):
 
             poc_kroku = kon_kroky - aktualni_kroky
             poc_kroku = round(poc_kroku)
-            print(f"abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
 
             if poc_kroku != 0:
                 svaly[index].go_forward(10, poc_kroku)
 
 
-        time.sleep(20)
+        time.sleep(10)
+        print(f"sval1 {b1.readA0()}")
+        print(f"sval2 {b5.readA0()}")
+        print(f"sval3 {b3.readA0()}")
+        print(f"sval4 {b4.readA0()}")
+        
+        
 
         for index in [1, 3]:           
             cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
@@ -223,7 +235,7 @@ class LeftFrame(customtkinter.CTkFrame):
 
             poc_kroku = kon_kroky - aktualni_kroky
             poc_kroku = round(poc_kroku)
-            print(f"abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
 
             if poc_kroku != 0:
                 svaly[index].go_forward(10, poc_kroku)
@@ -243,13 +255,17 @@ class LeftFrame(customtkinter.CTkFrame):
 
             poc_kroku = kon_kroky - aktualni_kroky
             poc_kroku = round(poc_kroku)
-            print(f"abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
 
             if poc_kroku != 0:
                 svaly[index].go_forward(10, poc_kroku)
 
 
-        time.sleep(20)
+        time.sleep(10)
+        print(f"sval1 {b1.readA0()}")
+        print(f"sval2 {b5.readA0()}")
+        print(f"sval3 {b3.readA0()}")
+        print(f"sval4 {b4.readA0()}");                                                                                                                                                                                                                              
 
         for index in range(1, 5):               
             cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
@@ -266,13 +282,142 @@ class LeftFrame(customtkinter.CTkFrame):
 
             poc_kroku = kon_kroky - aktualni_kroky
             poc_kroku = round(poc_kroku)
-            print(f"abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+    def nahoru_dolu(self):
+        conn = sqlite3.connect('database.db')
+        cur = conn.cursor()
+
+        svaly = {
+                1: b1,
+                2: b5,
+                3: b3,
+                4: b4
+                
+            }
+
+        for index in [1, 2]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (700 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+        for index in [3, 4]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (630 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
 
             if poc_kroku != 0:
                 svaly[index].go_forward(10, poc_kroku)
 
 
+        time.sleep(10)
+        print(f"sval1 {b1.readA0()}")
+        print(f"sval2 {b5.readA0()}")
+        print(f"sval3 {b3.readA0()}")
+        print(f"sval4 {b4.readA0()}")
+        
+        
 
+        for index in [1, 2]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (630 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+        for index in [3, 4]:           
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (700 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+        time.sleep(10)
+        print(f"sval1 {b1.readA0()}")
+        print(f"sval2 {b5.readA0()}")
+        print(f"sval3 {b3.readA0()}")
+        print(f"sval4 {b4.readA0()}");                                                                                                                                                                                                                              
+
+        for index in range(1, 5):               
+            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+            cislo_vzorce = cur.fetchone()
+            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+            rovnice = cur.fetchall()
+
+            sklon = rovnice[0][1]
+            posun = rovnice[0][2]
+            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+
+            aktualni_kroky = (akt_hod_mV - posun) / sklon
+            kon_kroky = (650 - posun) / sklon
+
+            poc_kroku = kon_kroky - aktualni_kroky
+            poc_kroku = round(poc_kroku)
+            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+
+            if poc_kroku != 0:
+                svaly[index].go_forward(10, poc_kroku)
+
+    def kombinace(self):
+        self.levo_pravo()
+        time.sleep(5)
+        self.nahoru_dolu()
 
             
 
@@ -324,7 +469,7 @@ class MainFrame(customtkinter.CTkFrame):
         self.entry3.grid(row=10, column=0, padx=20, pady=10)
 
         # ?druhý sloupec
-        self.label = customtkinter.CTkLabel(self, text="main frame")
+        self.label = customtkinter.CTkLabel(self, text="Nezávislé ovládání", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.label.grid(row=0, column=1, padx=20)
 
         self.label_sval5 = customtkinter.CTkLabel(self, text="sval5")
@@ -344,11 +489,11 @@ class MainFrame(customtkinter.CTkFrame):
 
         self.button = customtkinter.CTkButton(
             self, text="Spustit", command=self.button_event)
-        self.button.grid(row=11, column=1, padx=20, pady=10)
+        self.button.grid(row=12, column=1, padx=20, pady=10)
 
         self.ziskani_mv_button = customtkinter.CTkButton(
             self, text="Hodnoty svalu mV", command=self.hotnoty_svalu)
-        self.ziskani_mv_button.grid(row=12, column=1, padx=20, pady=10)
+        self.ziskani_mv_button.grid(row=11, column=1, padx=20, pady=10)
         
 
         # ?třetí sloupec
@@ -580,7 +725,7 @@ class RightFrame(customtkinter.CTkFrame):
         global radio_var
 
         # add widgets onto the frame, for example:
-        self.label = customtkinter.CTkLabel(self, text="right frame")
+        self.label = customtkinter.CTkLabel(self, text="Jednotky", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.label.grid(row=0, column=0, padx=20)
 
         radio_var = customtkinter.IntVar(value=0)
@@ -598,8 +743,26 @@ class RightFrame(customtkinter.CTkFrame):
                                                           command=self.radiobutton_event, variable=radio_var, value=4)
         self.radiobutton_3.grid(row=4, column=0, padx=20, pady=10)
 
-        self.back2Main_button = customtkinter.CTkButton(self, text="Main", command= master.back2Main) # button for login
-        self.back2Main_button.grid(row=7, column=0, padx=20, pady=10)
+        self.label1 = customtkinter.CTkLabel(self, text=" ")
+        self.label1.grid(row=5, column=0, padx=20)
+
+        self.label = customtkinter.CTkLabel(self, text=" ")
+        self.label.grid(row=6, column=0, padx=20)
+
+        self.label2 = customtkinter.CTkLabel(self, text=" ")
+        self.label2.grid(row=7, column=0, padx=20)
+
+        self.label3 = customtkinter.CTkLabel(self, text=" ")
+        self.label3.grid(row=8, column=0, padx=20)
+
+        self.label4 = customtkinter.CTkLabel(self, text=" ")
+        self.label4.grid(row=9, column=0, padx=20)
+
+        self.label5= customtkinter.CTkLabel(self, text=" ")
+        self.label5.grid(row=10, column=0, padx=20)
+
+        self.back2Main_button = customtkinter.CTkButton(self, text="Hlavní stránka", command= master.back2Main) # button for login
+        self.back2Main_button.grid(row=11, column=0, padx=20, pady=10)
 
 
     def radiobutton_event(self):
@@ -619,6 +782,8 @@ class GUI(customtkinter.CTkToplevel):
 
         # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
+
+        self.title("user")
         
         self.protocol("WM_DELETE_WINDOW", self.execute_after_close)
 
