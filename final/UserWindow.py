@@ -170,122 +170,125 @@ class LeftFrame(customtkinter.CTkFrame):
                 4: b4
                 
             }
+        for j in range(2):
+            for index in [1, 3]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-        for index in [1, 3]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (700 - posun) / sklon
 
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (700 - posun) / sklon
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+            for index in [2, 4]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-        for index in [2, 4]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (630 - posun) / sklon
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
-
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (630 - posun) / sklon
-
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
-
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
 
-        time.sleep(10)
-        print(f"sval1 {b1.readA0()}")
-        print(f"sval2 {b5.readA0()}")
-        print(f"sval3 {b3.readA0()}")
-        print(f"sval4 {b4.readA0()}")
+            time.sleep(5)
+            for index in range(1, 5):    
+                print(f"sval{index} {svaly[index].get_steps_from_start()}")
         
         
+        
+        
+        for j in range(2):
+            for index in [1, 3]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-        for index in [1, 3]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (630 - posun) / sklon
 
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (630 - posun) / sklon
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+            for index in [2, 4]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-        for index in [2, 4]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (700 - posun) / sklon
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
-
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (700 - posun) / sklon
-
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
-
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
 
-        time.sleep(10)
-        print(f"sval1 {b1.readA0()}")
-        print(f"sval2 {b5.readA0()}")
-        print(f"sval3 {b3.readA0()}")
-        print(f"sval4 {b4.readA0()}");                                                                                                                                                                                                                              
+            time.sleep(5)
+            for index in range(1, 5):    
+                print(f"sval{index} {svaly[index].get_steps_from_start()}")
 
-        for index in range(1, 5):               
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                                                                                                                                                                                                                                  
+        for j in range(2):
+            for index in range(1, 5):               
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (650 - posun) / sklon
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (650 - posun) / sklon
 
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+            time.sleep(5)
+        
 
     def nahoru_dolu(self):
         conn = sqlite3.connect('database.db')
@@ -299,120 +302,124 @@ class LeftFrame(customtkinter.CTkFrame):
                 
             }
 
-        for index in [1, 2]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+        for j in range(2):
+            for index in [1, 2]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (700 - posun) / sklon
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (700 - posun) / sklon
 
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+            for index in [3, 4]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-        for index in [3, 4]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (630 - posun) / sklon
 
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (630 - posun) / sklon
-
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
-
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
 
-        time.sleep(10)
-        print(f"sval1 {b1.readA0()}")
-        print(f"sval2 {b5.readA0()}")
-        print(f"sval3 {b3.readA0()}")
-        print(f"sval4 {b4.readA0()}")
+            time.sleep(5)
+            for index in range(1, 5):    
+                print(f"sval{index} {svaly[index].get_steps_from_start()}")
         
         
+        
+        
+        for j in range(2):
+            for index in [1, 2]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-        for index in [1, 2]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (630 - posun) / sklon
 
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (630 - posun) / sklon
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 630 je potřeba udělat {poc_kroku}")
+            for index in [3, 4]:           
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
 
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
 
-        for index in [3, 4]:           
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (700 - posun) / sklon
 
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
 
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (700 - posun) / sklon
 
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 700 je potřeba udělat {poc_kroku}")
+            time.sleep(5)
+            for index in range(1, 5):    
+                print(f"sval{index} {svaly[index].get_steps_from_start()}")
 
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
-
-        time.sleep(10)
-        print(f"sval1 {b1.readA0()}")
-        print(f"sval2 {b5.readA0()}")
-        print(f"sval3 {b3.readA0()}")
-        print(f"sval4 {b4.readA0()}");                                                                                                                                                                                                                              
-
-        for index in range(1, 5):               
-            cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
-            cislo_vzorce = cur.fetchone()
-            cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
-            rovnice = cur.fetchall()
-
-            sklon = rovnice[0][1]
-            posun = rovnice[0][2]
-            akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
-
-            aktualni_kroky = (akt_hod_mV - posun) / sklon
-            kon_kroky = (650 - posun) / sklon
-
-            poc_kroku = kon_kroky - aktualni_kroky
-            poc_kroku = round(poc_kroku)
-            print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
-
-            if poc_kroku != 0:
-                svaly[index].go_forward(10, poc_kroku)
+                                                                                                                                                                                                                                  
+        for j in range(2):
+            for index in range(1, 5):               
+                cur.execute(f"SELECT sval{index}_mv FROM sval{index}") # tady se načte číslo rovnice
+                cislo_vzorce = cur.fetchone()
+                cur.execute(f"SELECT * FROM sval{index}_mv WHERE id IN ({int(cislo_vzorce[0])})")# tady se načte rovnice pro přepočet z mv na kroky
+                rovnice = cur.fetchall()
+    
+                sklon = rovnice[0][1]
+                posun = rovnice[0][2]
+                akt_hod_mV = svaly[index].readA0() #získání aktuální hodnoty v mV
+    
+                aktualni_kroky = (akt_hod_mV - posun) / sklon
+                kon_kroky = (650 - posun) / sklon
+    
+                poc_kroku = kon_kroky - aktualni_kroky
+                poc_kroku = round(poc_kroku)
+                print(f"sval{index} abychom došli z pozice {akt_hod_mV} na 650 je potřeba udělat {poc_kroku}")
+                print(svaly[index].get_steps_from_start())
+                if poc_kroku != 0:
+                    svaly[index].go_forward(10, poc_kroku)
+    
+            time.sleep(5)
 
     def kombinace(self):
         self.levo_pravo()
@@ -686,7 +693,12 @@ class MainFrame(customtkinter.CTkFrame):
                 aktualni_kroky += result
 
                 budouci_napeti = sklon_kon_doraz * aktualni_kroky + posun_kon_doraz
-                print(f"počteční napětí svalu{index} je {akt_hod_mV} konečná má být {budouci_napeti}")
+                print(f"počteční napětí svalu{index} je {akt_hod_mV} konečná má být {budouci_napeti} pocet kroku co se musi udělat {result}")
+                print(svaly[index-1].get_steps_from_start())
+
+                 
+
+                
                 if(budouci_napeti < maxHodnotaSvalu and budouci_napeti > minHodnotaSvalu):
                     aktualni_poz[index-1] += result
                     results.append(result)
@@ -714,6 +726,13 @@ class MainFrame(customtkinter.CTkFrame):
                     print(svaly[i].readA0())
                     b = (svaly[i].readA0() - minHodnotaSvalu) / (maxHodnotaSvalu - minHodnotaSvalu)
                     progressbars[i].set(b)
+
+            time.sleep(5)
+
+            for index in range(1, 5):    
+                print(f"sval{index} {svaly[index].get_steps_from_start()}")
+
+            
 
             
     
