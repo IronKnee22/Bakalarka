@@ -6,11 +6,11 @@ import re
 
 import sqlite3
 
-
 from tkinter import messagebox
 
 from PneumoCVUTFBMI.DeviceLoader import DeviceLoader
 
+# inicializace souboru pro ukladaní měření
 workbook = openpyxl.Workbook()
 worksheet = workbook.active
 Minuly_Sval = 0
@@ -36,19 +36,15 @@ class adminWindow(customtkinter.CTkToplevel):
     def __init__(self, mainwindow, *args, **kwargs):
         super().__init__(*args, **kwargs)
 
-        # self.technicka_nula() # tohle se bude řešit teprve až to bude
-        # Set window size
         width = 480
         height = 240
         
-        # Automatic calculation position of window based on monitor size
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         screen_x = (screen_width - width) // 2
         screen_y = (screen_height - height) // 2
         self.title("admin")
 
-        # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
 
         self.measure_button = customtkinter.CTkButton(self, text="Měření", command= self.mesureWindow) # button for login
@@ -79,23 +75,24 @@ class adminWindow(customtkinter.CTkToplevel):
         self.withdraw()
 
     def databaseWindow(self,sval):
-        
         self.toplevel = databaseWindow(self, sval)
-
         self.withdraw()
 
     def back2Main(self):
+        # zavře aktualni okno
         self.withdraw()
+
+        # znovu otevře main okno
         self.mainwindow.deiconify()
+
 
 class mesuremenWindow(customtkinter.CTkToplevel):
     def __init__(self, mainwindow, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Set window size
+        
         width = 540
         height = 280
-        
-        # Automatic calculation position of window based on monitor size
+
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         screen_x = (screen_width - width) // 2
@@ -104,10 +101,8 @@ class mesuremenWindow(customtkinter.CTkToplevel):
 
         self.protocol("WM_DELETE_WINDOW", self.execute_after_close)
 
-        # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
 
-        # create sidebar frame with widgets
         self.sidebar_frame = customtkinter.CTkFrame(
             self, width=140, corner_radius=0)
         self.sidebar_frame.grid(row=0, column=0, rowspan=6, sticky="nsew")
@@ -116,7 +111,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
             self.sidebar_frame, text="Výběr svalu", font=customtkinter.CTkFont(size=20, weight="bold"))
         self.logo_label.grid(row=0, column=0, padx=20, pady=(20, 10))
 
-        # create radiobutton frame
         self.radio_var = customtkinter.IntVar(value=0)
 
         self.radio_button_1 = customtkinter.CTkRadioButton(
@@ -140,7 +134,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         self.main_button_3.grid(row=7, column=0, padx=(
             20, 20), pady=(20, 20), sticky="nsew")
 
-        # Apearence mode options
         self.appearance_mode_optionemenu = customtkinter.CTkOptionMenu(self.sidebar_frame, values=["Light", "Dark", "System"],
                                                                        command=self.change_appearance_mode_event)
         self.appearance_mode_optionemenu.grid(
@@ -148,7 +141,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         self.appearance_mode_optionemenu.set("System")
 
 
-        # create main entry and button
         self.entrySpeed = customtkinter.CTkEntry(
             self, placeholder_text="Speed")
         self.entrySpeed.configure(validate='focusout', validatecommand=(self.register(self.validate_speed), '%P'))
@@ -167,14 +159,15 @@ class mesuremenWindow(customtkinter.CTkToplevel):
                         pady=(20, 20), sticky="nsew")
 
         self.button_tech_nula = customtkinter.CTkButton(
-            self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), text="Technická nula", command=self.techncka_nula)
+            self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), text="Technická nula", command=self.technicka_nula)
         self.button_tech_nula.grid(row=2, column=2, padx=(20, 20), pady=(20, 20), sticky="nsew")
 
         self.main_button_1 = customtkinter.CTkButton(
             self, fg_color="transparent", border_width=2, text_color=("gray10", "#DCE4EE"), command=self.hw_value, text="krok")
         self.main_button_1.grid(row=3, column=2, padx=(
             20, 20), pady=(20, 20), sticky="nsew")
-        # tohle nevím proč nefunguje je to funkce na přidávání pomocí enteru
+        
+        # funkce pomocí které se k nějaká klváese přiřadí určitá klávsa
         self.bind("<Return>", lambda event: self.hw_value())
         self.bind("<KP_Enter>", lambda event: self.hw_value())
 
@@ -184,13 +177,10 @@ class mesuremenWindow(customtkinter.CTkToplevel):
             20, 20), pady=(20, 20), sticky="nsew")
         self.main_button_2.configure(state='disabled')
 
-
-        
-        
         self.mainwindow = mainwindow
         
         
-    def techncka_nula(self):
+    def technicka_nula(self):
         svaly = {
             0: b1,
             1: b2,
@@ -250,6 +240,7 @@ class mesuremenWindow(customtkinter.CTkToplevel):
             return True
 
     def back2AdminWindow(self):
+        # pokud uživatel zavře okno musí dojít k uložení jeho rozpracovaného souboru
         desktop_path = Path.home() / "Desktop"
         workbook.save(desktop_path / f"sval{Minuly_Sval}.xlsx")
         global x
@@ -261,11 +252,8 @@ class mesuremenWindow(customtkinter.CTkToplevel):
                     x=x-1
                     time.sleep(3)
         
-
-
         self.withdraw()
         self.mainwindow.deiconify()
-
 
     def change_pokracovat(self):
         global pokracovat
@@ -288,8 +276,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
             global Steps
             global Minuly_Sval
             global pokracovat
-
-
 
             # Vytvoření slovníku pro objekty b1, b2, atd.
             global b_objects
@@ -368,38 +354,6 @@ class mesuremenWindow(customtkinter.CTkToplevel):
         else:
             print("Neznámý sval")
 
-    def technicka_nula(self):
-        global svaly
-        svaly = {
-                0: b1,
-                1: b2,
-                2: b3,
-                3: b4,
-                4: b5
-            }
-
-        brokenMuscle = 3
-
-        while True:  
-            results = [sval.readA0() for sval in svaly.values()]
-
-            all_in_range = all(595 <= result <= 610 for i, result in enumerate(results) if i != brokenMuscle)
-
-            if all_in_range:
-                break  
-            
-            for i in range(5):
-                if i==brokenMuscle:
-                    continue
-                
-                if results[i] >= 615:
-                    svaly[i].go_backward(10, 10)
-                elif results[i] <= 595:
-                    svaly[i].go_forward(10, 10)
-
-
-            time.sleep(3)
-
     def execute_after_close(self):
 
         desktop_path = Path.home() / "Desktop"
@@ -442,20 +396,16 @@ class mesuremenWindow(customtkinter.CTkToplevel):
 class databaseWindow(customtkinter.CTkToplevel):
     def __init__(self, mainwindow, sval, *args, **kwargs):
         super().__init__(*args, **kwargs)
-        # Set window size
+        
         width = 1400
         height = 500
-        
-        # Automatic calculation position of window based on monitor size
+
         screen_width = self.winfo_screenwidth()
         screen_height = self.winfo_screenheight()
         screen_x = (screen_width - width) // 2
         screen_y = (screen_height - height) // 2
         self.title(sval)
 
-        
-
-        # Set size a place parametrs
         self.geometry(f"{width}x{height}+{screen_x}+{screen_y}")
 
         self.mainwindow = mainwindow
@@ -464,11 +414,9 @@ class databaseWindow(customtkinter.CTkToplevel):
         self.start(sval)
 
     def start(self, sval):
-        
         self.load_table(f"{sval}_mv", 0)
         self.load_table(f"{sval}_mbar", 2)
         self.load_table(f"{sval}_mv2bar", 4)
-
 
     def load_table(self, table_name, column):
         global radek
@@ -523,6 +471,7 @@ class databaseWindow(customtkinter.CTkToplevel):
 
     def vytvorit_mereni(self, table_name, column):
         frame = customtkinter.CTkFrame(self)
+
         # Zjistit počet widgetů ve sloupci a nastavit řádek pro nový rámec
         row = len(self.grid_slaves(column=column)) + 1
         frame.grid(row=row, column=column, padx=10, pady=5)
@@ -553,17 +502,12 @@ class databaseWindow(customtkinter.CTkToplevel):
                 for widget in self.winfo_children():
                     widget.destroy()
                     
-
                 self.start(self.sval)
 
             except sqlite3.Error as error:
                 print("Chyba při ukládání změn do databáze:", error)
         else:
             print("Prosím, vyplňte všechny pole.")
-
-        
-
-        
 
     def vlozit_do_databaze(self, table_name, column, frame):
         sklon = self.entry_vyt_posun.get()
@@ -587,7 +531,6 @@ class databaseWindow(customtkinter.CTkToplevel):
                 print("Chyba při ukládání do databáze:", error)
         else:
             print("Některá pole nejsou vyplněna.")
-
 
     def back2AdminWindow(self):
         self.withdraw()
