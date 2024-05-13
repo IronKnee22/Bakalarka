@@ -1,0 +1,134 @@
+602.477294921875
+1230.338134765625
+607.7484130859375
+626.0386962890625
+607.3239135742188
+sval1 abychom došli z pozice 597.1070556640625 na 650 je potřeba udělat 24
+0.0
+sval2 abychom došli z pozice 603.33642578125 na 650 je potřeba udělat 28
+2.0
+sval3 abychom došli z pozice 613.1668701171875 na 650 je potřeba udělat 22
+10.0
+sval4 abychom došli z pozice 628.377197265625 na 650 je potřeba udělat 8
+17.0
+sval1 24.0🟩
+sval2 30.0🟩
+sval3 32.0🟩
+sval4 25.0🟩
+sval1 abychom došli z pozice 622.70068359375 na 650 je potřeba udělat 12🟥
+24.0
+sval2 abychom došli z pozice 609.2276611328125 na 650 je potřeba udělat 25🟥
+30.0
+sval3 abychom došli z pozice 609.0057983398438 na 650 je potřeba udělat 25🟥
+32.0
+sval4 abychom došli z pozice 632.1250610351562 na 650 je potřeba udělat 7🟥
+25.0
+sval1 36.0🟩
+sval2 55.0🟩
+sval3 57.0🟩
+sval4 32.0🟩
+
+počteční napětí svalu1 je 666.9669799804688 konečná má být 666.9669799804688 pocet kroku co se musi udělat 0🟩
+36.0
+počteční napětí svalu2 je 634.6497192382812 konečná má být 634.6497192382812 pocet kroku co se musi udělat 0🟥
+55.0
+počteční napětí svalu3 je 611.6260375976562 konečná má být 611.6260375976562 pocet kroku co se musi udělat 0🟥
+57.0
+
+Tlak 14
+počteční napětí svalu4 je 661.6580200195312 konečná má být 679.5591200195313 pocet kroku co se musi udělat 7🟩
+32.0
+sval4 39.0🟩
+
+
+Tlak 17🟩
+počteční napětí svalu4 je 677.8756103515625 konečná má být 695.7767103515625 pocet kroku co se musi udělat 7🟩
+39.0
+sval4 46.0🟩
+
+
+Tlak 21🟩
+počteční napětí svalu4 je 693.7796630859375 konečná má být 675.8785630859375 pocet kroku co se musi udělat -7🟩
+46.0
+sval4 39.0🟩
+
+
+Tlak 19🟩
+počteční napětí svalu4 je 681.7341918945312 konečná má být 663.8330918945312 pocet kroku co se musi udělat -7🟩
+39.0
+sval3 32.0🟩
+
+Tlak 17🟩
+počteční napětí svalu4 je 670.47900390625 konečná má být 639.79140390625 pocet kroku co se musi udělat -12🟩
+32.0
+sval3 20.0🟩
+
+Tlak 14🟥
+počteční napětí svalu4 je 646.0186157226562 konečná má být 676.7062157226562 pocet kroku co se musi udělat 12🟩
+20.0
+sval3 32.0🟩
+
+Tlak 19🟩
+počteční napětí svalu4 je 654.6316528320312 konečná má být 685.3192528320312 pocet kroku co se musi udělat 12🟥
+32.0
+sval3 44.0🟩
+
+
+
+
+
+
+počteční napětí svalu1 je 659.77783203125 konečná má být 677.46183203125 pocet kroku co se musi udělat 8
+36.0
+Tlak 14
+sval1 44.0
+
+Tlak 17🟩
+počteční napětí svalu1 je 682.8466186523438 konečná má být 665.1626186523438 pocet kroku co se musi udělat -8🟩
+44.0
+sval1 36.0🟩
+
+Tlak 15🟩
+počteční napětí svalu1 je 670.4140625 konečná má být 652.7300625 pocet kroku co se musi udělat -8🟩
+36.0
+sval1 28.0🟩
+
+Tlak 13🟩
+počteční napětí svalu1 je 656.1302490234375 konečná má být 638.4462490234375 pocet kroku co se musi udělat -8🟩
+28.0
+sval1 55.0🟩
+
+Tlak 9
+počteční napětí svalu1 je 641.8755493164062 konečná má být 659.5595493164062 pocet kroku co se musi udělat 8🟩
+20.0
+sval1 28.0🟩
+
+Tlak 12🟩
+počteční napětí svalu1 je 653.5842895507812 konečná má být 671.2682895507812 pocet kroku co se musi udělat 8🟩
+28.0
+sval1 36.0🟩
+
+Tlak 15🟩
+počteční napětí svalu1 je 669.3275756835938 konečná má být 687.0115756835937 pocet kroku co se musi udělat 8🟩
+36.0
+sval1 44.0🟩
+
+Tlak 18🟩
+počteční napětí svalu1 je 689.9529418945312 konečná má být 661.2164418945313 pocet kroku co se musi udělat -13🟩
+44.0
+sval1 31.0🟩
+
+Tlak 13🟩
+počteční napětí svalu1 je 658.3058471679688 konečná má být 629.5693471679688 pocet kroku co se musi udělat -13🟩
+31.0
+sval1 18.0🟩
+
+Tlak 9🟩
+počteční napětí svalu1 je 628.0714111328125 konečná má být 656.8079111328125 pocet kroku co se musi udělat 13🟩
+18.0
+sval1 31.0🟩
+
+Tlak 13🟩
+počteční napětí svalu1 je 656.0244750976562 konečná má být 684.7609750976562 pocet kroku co se musi udělat 13🟩
+31.0
+sval1 44.0🟩

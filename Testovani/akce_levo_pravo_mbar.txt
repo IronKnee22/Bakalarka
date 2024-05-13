@@ -1,0 +1,153 @@
+User
+sval1 abychom došli z pozice 603.523681640625 na 650 je potřeba udělat 21
+4.0
+sval2 abychom došli z pozice 600.4772338867188 na 650 je potřeba udělat 30
+5.0
+sval3 abychom došli z pozice 604.876708984375 na 650 je potřeba udělat 27
+57.0
+sval4 abychom došli z pozice 590.7105712890625 na 650 je potřeba udělat 23
+-16.0
+sval1 25.0
+sval2 35.0
+sval3 84.0
+sval4 7.0
+sval1 abychom došli z pozice 636.6552124023438 na 650 je potřeba udělat 6
+25.0
+sval2 abychom došli z pozice 601.4268798828125 na 650 je potřeba udělat 29
+35.0
+sval3 abychom došli z pozice 643.3267211914062 na 650 je potřeba udělat 4
+84.0
+sval4 abychom došli z pozice 595.867919921875 na 650 je potřeba udělat 21
+7.0
+sval1 31.0
+sval2 64.0
+sval3 88.0
+sval4 28.0
+sval1 abychom došli z pozice 654.0999755859375 na 700 je potřeba udělat 21
+31.0
+sval3 abychom došli z pozice 650.3762817382812 na 700 je potřeba udělat 30
+88.0
+sval2 abychom došli z pozice 653.504150390625 na 630 je potřeba udělat -14
+64.0
+sval4 abychom došli z pozice 649.9830322265625 na 630 je potřeba udělat -8
+28.0
+sval1 52.0
+sval2 50.0
+sval3 118.0
+sval4 20.0
+sval1 abychom došli z pozice 676.1607055664062 na 700 je potřeba udělat 11
+52.0
+sval3 abychom došli z pozice 712.7214965820312 na 700 je potřeba udělat -8
+118.0
+sval2 abychom došli z pozice 649.0232543945312 na 630 je potřeba udělat -12
+50.0
+sval4 abychom došli z pozice 638.0996704101562 na 630 je potřeba udělat -3
+20.0
+sval1 63.0
+sval2 38.0
+sval3 110.0
+sval4 17.0
+sval1 abychom došli z pozice 690.1051025390625 na 630 je potřeba udělat -27
+63.0
+sval3 abychom došli z pozice 709.1917114257812 na 630 je potřeba udělat -48
+110.0
+sval2 abychom došli z pozice 649.1767578125 na 700 je potřeba udělat 31
+38.0
+sval4 abychom došli z pozice 631.9094848632812 na 700 je potřeba udělat 27
+17.0
+sval1 36.0
+sval2 69.0
+sval3 62.0
+sval4 44.0
+sval1 abychom došli z pozice 670.317626953125 na 630 je potřeba udělat -18
+36.0
+sval3 abychom došli z pozice 656.8386840820312 na 630 je potřeba udělat -16
+62.0
+sval2 abychom došli z pozice 657.94189453125 na 700 je potřeba udělat 25
+69.0
+sval4 abychom došli z pozice 690.316162109375 na 700 je potřeba udělat 4
+44.0
+sval1 18.0
+sval2 94.0
+sval3 46.0
+sval4 48.0
+sval1 abychom došli z pozice 636.9686889648438 na 650 je potřeba udělat 6
+18.0
+sval2 abychom došli z pozice 697.4844360351562 na 650 je potřeba udělat -29
+94.0
+sval3 abychom došli z pozice 640.8613891601562 na 650 je potřeba udělat 6
+46.0
+sval4 abychom došli z pozice 689.4841918945312 na 650 je potřeba udělat -15
+48.0
+sval1 abychom došli z pozice 634.7836303710938 na 650 je potřeba udělat 7
+24.0
+sval2 abychom došli z pozice 696.597900390625 na 650 je potřeba udělat -28
+65.0
+sval3 abychom došli z pozice 635.0667114257812 na 650 je potřeba udělat 9
+52.0
+sval4 abychom došli z pozice 661.8177490234375 na 650 je potřeba udělat -5
+33.0
+sval1 abychom došli z pozice 652.56005859375 na 700 je potřeba udělat 21
+31.0
+sval3 abychom došli z pozice 636.5089111328125 na 700 je potřeba udělat 38
+61.0
+sval2 abychom došli z pozice 649.0796508789062 na 630 je potřeba udělat -12
+37.0
+sval4 abychom došli z pozice 649.4982299804688 na 630 je potřeba udělat -8
+28.0
+sval1 52.0
+sval2 25.0
+sval3 99.0
+sval4 20.0
+sval1 abychom došli z pozice 673.952392578125 na 700 je potřeba udělat 12
+52.0
+sval3 abychom došli z pozice 668.0946655273438 na 700 je potřeba udělat 19
+99.0
+sval2 abychom došli z pozice 639.8326416015625 na 630 je potřeba udělat -6
+25.0
+sval4 abychom došli z pozice 637.1231079101562 na 630 je potřeba udělat -3
+20.0
+sval1 64.0
+sval2 19.0
+sval3 118.0
+sval4 17.0
+sval1 abychom došli z pozice 687.905029296875 na 630 je potřeba udělat -26
+64.0
+sval3 abychom došli z pozice 715.2111206054688 na 630 je potřeba udělat -52
+118.0
+sval2 abychom došli z pozice 629.0983276367188 na 700 je potřeba udělat 43
+19.0
+sval4 abychom došli z pozice 625.154052734375 na 700 je potřeba udělat 29
+17.0
+sval1 38.0
+sval2 62.0
+sval3 66.0
+sval4 46.0
+sval1 abychom došli z pozice 674.901611328125 na 630 je potřeba udělat -20
+38.0
+sval3 abychom došli z pozice 662.9143676757812 na 630 je potřeba udělat -20
+66.0
+sval2 abychom došli z pozice 646.9461669921875 na 700 je potřeba udělat 32
+62.0
+sval4 abychom došli z pozice 690.4117431640625 na 700 je potřeba udělat 4
+46.0
+sval1 18.0
+sval2 94.0
+sval3 46.0
+sval4 50.0
+sval1 abychom došli z pozice 628.1026000976562 na 650 je potřeba udělat 10
+18.0
+sval2 abychom došli z pozice 699.19287109375 na 650 je potřeba udělat -30
+94.0
+sval3 abychom došli z pozice 636.07275390625 na 650 je potřeba udělat 8
+46.0
+sval4 abychom došli z pozice 700.7650146484375 na 650 je potřeba udělat -20
+50.0
+sval1 abychom došli z pozice 639.0552978515625 na 650 je potřeba udělat 5
+28.0
+sval2 abychom došli z pozice 695.4229736328125 na 650 je potřeba udělat -27
+64.0
+sval3 abychom došli z pozice 636.8889770507812 na 650 je potřeba udělat 8
+54.0
+sval4 abychom došli z pozice 654.2440795898438 na 650 je potřeba udělat -2
+30.0
